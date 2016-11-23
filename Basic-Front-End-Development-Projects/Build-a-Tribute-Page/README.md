@@ -1,5 +1,5 @@
+[返回项目主页](https://github.com/xdsnet/freecodecamp-prj/)  [返回上级](../)
 # 致敬页面（Tribute Page）任务
-[返回项目主页](../../)
 
 ## 任务要求
 * 一个普通的Web页面
