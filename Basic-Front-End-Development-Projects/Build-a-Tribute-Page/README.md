@@ -7,10 +7,10 @@
 * 提供链接交互
 
 ## 实现说明
-略
+因为图片外引不方便，且Codepen不支持上传资源，所以图片采用base64编码直接在html文档中插入。
 
 ## 项目结构
 * index.html - 入口和所有内容的展示
 
 ## Codepen.io 展示
-[向伟大的Dennis Ritchie致敬](http://codepen.io/xdsnet/full/bBdaJK)
+[向伟大的Dennis Ritchie致敬](http://codepen.io/xdsnet/full/bBdaJK){:target="_blank"}
