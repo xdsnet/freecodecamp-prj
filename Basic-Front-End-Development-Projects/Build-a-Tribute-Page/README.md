@@ -13,4 +13,4 @@
 * index.html - 入口和所有内容的展示
 
 ## Codepen.io 展示
-[向伟大的Dennis Ritchie致敬](http://codepen.io/xdsnet/full/bBdaJK){:target="_blank"}
+[向伟大的Dennis Ritchie致敬](http://codepen.io/xdsnet/full/bBdaJK {:target="_blank"})
