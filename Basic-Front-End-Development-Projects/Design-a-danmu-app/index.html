@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="xdsnet's 弹幕">
+        <meta name="author" content="xdsnet">
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script><!--引入jquery-->
+        <script  src="https://cdn.wilddog.com/js/client/current/wilddog.js"></script><!--引入野狗实时后端云api-->
+        <style>
+        .allmain{
+            margin: 20px;
+            text-align: center;
+        }
+        .dm_screen {
+            border: 1px solid #aaa;
+        }
+        .allmain  .dm_screen .dm_mask{
+            width: 100%;
+            height: 385px;
+        }
+        .allmain .dm_screen .dm_txt div{
+            font-size: 22px;
+            line-height: 1.3em;
+            font-weight: 500;
+            color: #fff;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .cmd_txt{
+            width: 386px;
+            height: 33px;
+            margin-top:5px;
+            margin-bottom: 5px;
+            margin-left:auto;
+            margin-right:auto;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            padding-left: 8px;
+            display: block;
+        }
+        .cmd_post, .cmd_clear{
+            border-radius: 3px;
+            text-align: center;
+	        padding: 0;
+	        height: 35px;
+	        line-height: 35px;
+	        font-size: 14px;
+	        width: 159px;
+	        background-color: white;
+        }
+        .cmd_post{
+            border: 1px solid #f10;
+            color: #f10;
+        }
+        .cmd_clear{
+            border: 1px solid #444;
+            color: #444;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="allmain">
+            <div class="dm_screen" id="dm_screen">
+                <div class="dm_mask" id="dm_mask">
+                    <div class="dm_txt" id="dm_txt">
+                        <!-- 显示弹幕-->
+                    </div>
+                </div>
+            </div>
+            <div class="cmd">
+                <div class="cmd_main">
+                    <input placeholder="弹点什么？！" class="cmd_txt" id="cmd_txt" type="text" /><!--文本输入框-->
+                    <input type="button" value="我  弹" class="cmd_post" id="cmd_post" /><!--弹幕按钮-->
+                    <input type="button" value="清  屏" class="cmd_clear" id="cmd_clear" /><!--清屏按钮-->
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+$(document).ready(function(){
+    var wilddogref = new Wilddog("https://tmlog.wilddogio.com");// 野狗实时后端云服务地址，需要自己注册后定制
+    var dmArr = []; // 弹幕数据数组
+    // 处理 “我  弹”按钮把数据提交到野狗云
+    $("#cmd_post").click(function(){
+        var tmptxt = $("#cmd_txt").val(); 
+        if(tmptxt !=""){
+            wilddogref.child('message').push(tmptxt);
+        }
+        $("#cmd_txt").val(""); 
+    });
+
+    // 响应按键点击事件
+    $("#cmd_txt").keypress(function(){
+        if(event.keyCode == "13"){
+            $("#cmd_post").trigger("click");
+        }
+    });
+
+    //处理 “清  屏”按钮
+    $("#cmd_clear").click(function(){
+        wilddogref.remove();
+        dmArr=[];
+        $(".dm_txt").empty();
+    });
+
+    // 监听云端数据变更，并更新本地数据(添加消息)
+    wilddogref.child("message").on("child_added",function(sq){
+        var tmptxt = sq.val();
+        dmArr.push(tmptxt);
+        var newDmtxt = $("<div class='dm_message'><div>");
+        newDmtxt.text(tmptxt);
+        $("#dm_txt").append(newDmtxt);
+        moveTxt(newDmtxt);
+    });
+
+    // 清空消息
+    wilddogref.on("child_removed",function(){
+        dmArr = [];
+        $("#dm_txt").empty();
+    });
+
+    var maskT = $("#dm_mask").offset().top; // 弹幕区域的顶坐标
+    var maskB = maskT + $("#dm_mask").height(); // 弹幕区域的底坐标
+
+    var _top = maskT ;
+
+    var moveTxt = function(txtobj){ // 定义弹幕文字移动处理函数
+        var _left = $("#dm_mask").width() - txtobj.width();
+        _top += 50;
+        if( _top > (maskB - 50)){
+            _top = maskT;
+        }
+
+        txtobj.css({
+            "left": _left,
+            "top":_top,
+            "color":getRC()
+        });
+
+        var time = 20000 + 10000 * Math.random();
+
+        txtobj.animate({left:"-" + _left + "px"},time, function(){
+            txtobj.remove();
+        });
+    };
+
+    var getRC = function(){ // 定义获取随机颜色函数
+        var RT="#";
+        var tColor=(Math.random() * 0x1000000 << 0).toString(16); //获取一个不超过 0x1000000 的颜色值
+        var b0= new Array(7- tColor.length).join("0");
+        return RT+b0+tColor;
+    };
+
+    var getArrAndStart = function(){
+        if( dmArr.length>0){
+            var n = Math.floor(Math.random() * dmArr.length + 1) - 1; // 随机取得元素索引号
+            var newDmtxt = $("<div>" + dmArr[n] + "</div>"); 
+            $("#dm_txt").append(newDmtxt);
+            moveTxt(newDmtxt);
+        }
+
+        setTimeout(getArrAndStart, 3000); //间隔3秒弹一个
+    }
+
+    jQuery.fx.interval =50;
+    getArrAndStart();
+});
+    </script>
+</html>
