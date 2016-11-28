@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="xdsnet's 斗鱼订阅">
+        <meta name="author" content="xdsnet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta http-equiv="Access-Control-Allow-Origin" content="*">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>斗鱼订阅</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" type="stylesheet">
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script><!--引入jquery-->
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><!--引入bootstrap-->
+
+        
+<style>
+body {
+  background-color: #ecf0e7;
+  font-size: 14px;
+  color: #8ea7c2;
+}
+
+a, a:focus, a:hover, a:visited {
+  color: #b8cca6;
+}
+
+.nourl{
+  color: #b8cca6;
+}
+
+h1 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: left;
+  margin: 15px 0px;
+  font-size: 3em;
+}
+
+.container {
+  background-color: #e1e1e6;
+  margin: 0px auto;
+  padding: 0px;
+  max-width: 700px;
+}
+
+.row {
+  margin: 2px 0px;
+  padding: 5px;
+  line-height: 50px;
+}
+
+.menu {
+  position: absolute;
+  right: 0px;
+  bottom: 5px;
+  color: #5c5457;
+  font-family:  sans-serif;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+.menu #online .circle {
+  background-color: #b8cca6;
+}
+.menu #offline .circle {
+  background-color: #8ea7c2;
+}
+.menu .active, .menu .selector:hover {
+  width: 65px !important;
+  -webkit-transition: width 0.4s linear;
+  transition: width 0.4s linear;
+  cursor: pointer;
+}
+.menu .selector {
+  line-height: 20px;
+  height: 20px;
+  background-color: #e1e1e6;
+  padding: 0px 5px;
+  margin: 2px 0px;
+  width: 20px;
+  overflow: hidden;
+  float: right;
+  clear: right;
+  -webkit-transition: width 0.4s linear;
+  transition: width 0.4s linear;
+}
+.menu .selector .circle {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background-color: #5c5457;
+  border: 1px solid #5c5457;
+  float: left;
+  margin: 5px 5px 5px 0px;
+}
+.menu .selector p {
+  float: right;
+  margin: 0px;
+}
+
+#header, #footer {
+  position: relative;
+  background-color: #5c5457;
+  color: #e1e1e6;
+  padding: 5px 65px 5px 15px;
+}
+
+.logo {
+  max-width: 50px;
+  max-height: 50px;
+  border-radius: 50%;
+  border: 3px solid #e1e1e6;
+}
+
+.offline {
+  background-color: #4a5e82;
+}
+
+.online {
+  background-color: #b8cca6;
+  color: #5c5457;
+}
+.online a, .online a:focus, .online a:hover, .online a:visited {
+  color: #4a5e82;
+}
+
+#streaming {
+  font-style: italic;
+}
+
+#name, #streaming {
+  line-height: 25px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .container {
+    margin: 10px auto;
+  }
+
+  #name, #streaming {
+    line-height: 50px;
+    height: 50px;
+  }
+
+  #header {
+    padding-left: 65px;
+  }
+}
+
+
+</style>    
+    </head>
+    <body>
+ <div class="container">
+  <div class="row" id="header">
+    <h1>斗鱼视频订阅</h1>
+    <div class="menu">
+      <div class="selector active" id="all">
+        <div class="circle"></div><p>所有</p>
+      </div>
+      <div class="selector" id="online">
+        <div class="circle"></div><p>在播</p>
+      </div>
+      <div class="selector" id="offline">
+        <div class="circle"></div><p>关播</p>
+      </div>
+    </div>
+  </div>
+  <div id="display">
+  </div>
+  <div class="row" id="footer">
+  </div>
+</div>
+
+
+</body>
+
+<script>
+var channels = ["lol", "969525","lslalala","abc","how","xiaoliu","320155"];
+
+function getRoomInfo() {
+  channels.forEach(function(channel) {
+    function makeURL(name) {
+      return 'http://crossorigin.me/http://open.douyucdn.cn/api/RoomApi/room/' + name+"";//因为跨域问题，所以采用了一个http://crossorigin.me代理获取数据
+    };
+    $.get(makeURL(channel), function(data) {
+      var error=data.error;
+      var mdata=data.data;
+      var game="", //游戏分类信息
+          status="",//房间状态信息
+          url="#",//播出链接地址
+          owner_name="",//主播名
+          room_name=channel,//房间名
+          start_time="",//最近开播时间
+          room_thumb="",//主播头像
+          online=0,//在线人数
+          logo="https://ipsumimage.appspot.com/50x50?l=%3f&s=40&b=ecf0e7&f=5c5457&t=png",//要显示的主播logo
+          owner_wight=0;//主播体重
+      var html="";//要显示的1行内容
+          
+      if(error===0){
+        if(mdata.room_status==="1"){
+          url="#"
+        game="关播";
+        status="offline";
+        }else if(mdata.room_status==="2"){
+        game=mdata.cate_name;
+        url="https://www.douyu.com/"+mdata.room_id;
+        status="online";
+        }
+       logo = mdata.room_thumb ? mdata.room_thumb : "https://ipsumimage.appspot.com/50x50?l=%3f&s=40&b=ecf0e7&f=5c5457&t=png";//主播头像
+        
+        
+          owner_name=mdata.owner_name;
+          room_name=mdata.room_name;//房间名
+          start_time=mdata.start_time;//最近开播时间
+          online=mdata.online;//在线人数
+      }else{
+        game="不能查询到该房间";
+        status="offline";
+      }
+
+      html='<div class="row '+
+        status+' "><div class="col-xs-2 col-sm-1" id="icon"><img src="'+
+        logo+'" class="logo"></div><div class="col-xs-10 col-sm-3" id="name">';
+      if(url==="#"){
+        html+='<span class="nourl">'+room_name+'</span>';
+      }else{
+        html+='<a href="'+
+          url+'" target="_blank">'+
+          room_name+'</a>';
+      }
+      
+          html+='</div><div class="col-xs-10 col-sm-8" id="streaming">'+
+        game+' <span class="hidden-xs">'+
+        "播主:"+owner_name+"/在线人数:"+online+"/最近播出时间:"+start_time+'</span></div></div>';
+         status === "online" ? $("#display").prepend(html):$("#display").append(html);
+    });
+  });
+};
+
+$(document).ready(function() {
+  getRoomInfo();
+  $(".selector").click(function() {
+    $(".selector").removeClass("active");
+    $(this).addClass("active");
+    var status = $(this).attr('id');
+    if (status === "all") {
+      $(".online, .offline").removeClass("hidden");
+    } else if (status === "online") {
+      $(".online").removeClass("hidden");
+      $(".offline").addClass("hidden");
+    } else {
+      $(".offline").removeClass("hidden");
+      $(".online").addClass("hidden");
+    }
+  })
+});
+
+</script>
+
+</html>
