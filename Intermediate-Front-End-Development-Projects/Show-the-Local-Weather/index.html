@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="xdsnet's 本地天气">
+        <meta name="author" content="xdsnet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>聚合数据天气应用</title>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" type="stylesheet">
+        <link href="http://fonts.googleapis.com/css?family=Roboto:100,300,700,400" type="stylesheet">
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script><!--引入jquery-->
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><!--引入bootstrap-->
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script><!--引入angular-->
+        
+<style>
+body{text-align: center;}
+img{margin:0 auto;}
+a{display: inline-block;}
+h1{display: inline-block;vertical-align: 8px;color: orange;}
+</style>    
+    </head>
+    <body ng-app="Weather">
+  <div class="container" ng-controller="MainCtrl">
+    <div class="row">
+      <header class="col-xs-12 text-center">
+        <!-- <h1>Free C<i class="wi wi-hail"></i>de Camp </h1> -->
+        <a href="http://www.heweather.com/"><img src="http://www.heweather.com/logo.png" class="img-responsive"></a>
+        <h1>天气应用</h1>
+      </header>
+    </div>
+    <div class="col-xs-12 col-md-12">
+      <div class="text-center status">
+        <p>{{Data.basic.city}}</p>
+        <p>{{Data.daily_forecast[0].date}}</p>
+        <p>最后更新:{{Data.basic.update.loc}}</p>
+        <hr>
+        <h4>今天天气</h4>
+        <p>日间:{{Data.daily_forecast[0].cond.txt_d}} / 夜间:{{Data.daily_forecast[0].cond.txt_n}}</p>
+        <p>能见度:{{Data.daily_forecast[0].vis}}km</p>
+        <p>最高气温（摄氏）：{{Data.daily_forecast[0].tmp.max}} / 最低气温（摄氏）：{{Data.daily_forecast[0].tmp.min}}</p>
+        <p>湿度：{{Data.daily_forecast[0].hum}}</p>
+        <p>风向：{{Data.daily_forecast[0].wind.dir}} / 风力:{{Data.daily_forecast[0].wind.sc}}级 / 最大风速(km/h)：{{Data.daily_forecast[0].wind.spd}}</p>
+        <hr>
+        <p>空气质量:{{Data.aqi.city.qlty}}</p>
+        <p>空气质量指数:{{Data.aqi.city.aqi}}</p>
+        <hr>
+        <p>主要污染物指数</p>
+        <p>co({{Data.aqi.city.co}}) | no2({{Data.aqi.city.no2}} ) | o3({{Data.aqi.city.o3}}) |o3({{Data.aqi.city.o3}})| so2({{Data.aqi.city.so2}})</p>
+
+        <p>pm10({{Data.aqi.city.pm10}}) | pm25({{Data.aqi.city.pm25}})</p>
+
+        <hr>
+        <p>生活指数</p>
+        <p>舒适度:{{Data.suggestion.comf.brf}}。{{Data.suggestion.comf.txt}}</p>
+        <p>穿衣：{{Data.suggestion.drsg.brf}}。{{Data.suggestion.drsg.txt}}</p>
+        <p>洗车：{{Data.suggestion.cw.brf}}。{{Data.suggestion.cw.txt}}</p>
+        <p>旅行：{{Data.suggestion.trav.brf}}。{{Data.suggestion.trav.txt}}</p>
+        <p>锻炼：{{Data.suggestion.sport.brf}}。{{Data.suggestion.sport.txt}}</p>
+        <p>紫外线：{{Data.suggestion.uv.brf}}。{{Data.suggestion.uv.txt}}</p>
+      </div>
+      <hr>
+    </div>
+  </div>
+</body>
+
+<script>
+var app = angular.module('Weather', []);
+app.factory('WeatherApi', function($http) {
+  var obj = {};
+  obj.getIP  = function() {
+    return $http.jsonp("http://ipinfo.io/json?callback=JSON_CALLBACK");
+  }
+  obj.getCurrent = function(ip) {
+    var api = "https://free-api.heweather.com/v5/weather?";
+    var APPKey = "&key=4d7bddbf401e47c886381d36749c21e1&city=";
+    var cb = "";
+    return $http.get(api + APPKey + ip + cb);
+  };
+  return obj
+});
+
+app.controller('MainCtrl', function($scope, WeatherApi) {
+  $scope.Data = {};
+  WeatherApi.getIP().success(function(data){
+    var ip = data.ip;
+    WeatherApi.getCurrent(ip).success(function(data) {
+      var _Data= data;
+      $scope.Data = _Data.HeWeather5[0];
+      delete $scope.items[Object.keys($scope.items)[0]];
+    });
+  })
+});
+
+</script>
+
+</html>
