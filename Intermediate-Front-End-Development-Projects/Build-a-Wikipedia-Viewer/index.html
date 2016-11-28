@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="xdsnet's 本地天气">
+        <meta name="author" content="xdsnet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>wiki百科</title>
+
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script><!--引入jquery-->
+    
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script><!--引入angular-->
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular-animate.min.js"></script><!--引入angular 动画库-->
+        
+<style>
+@import url(https://fonts.googleapis.com/css?family=Rokkitt:700);
+* {
+  box-sizing: border-box;
+}
+
+html, body, main {
+  font-family: Tahoma, Sans-Serif;
+  position: relatiave;
+  margin: 0;
+  padding: 0;
+  padding-top: 10px;
+  width: 100%;
+  height: 100%;
+  background-color: #2c6cfb;
+}
+
+input[type='text'] {
+  -webkit-appearance: none;
+  outline: none;
+  border: none;
+}
+
+.wrapper {
+  display: flex;
+  width: 100%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  box-orient: vertical;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  box-direction: normal;
+  -webkit-flex-direction: column;
+  -moz-flex-direction: column;
+  flex-direction: column;
+  -ms-flex-direction: column;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  box-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  -o-align-items: center;
+  align-items: center;
+  -ms-flex-align: center;
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  box-pack: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  -ms-justify-content: center;
+  -o-justify-content: center;
+  justify-content: center;
+  -ms-flex-pack: center;
+  -webkit-transition: all 2s linear;
+  -moz-transition: all 2s linear;
+  transition: all 2s linear;
+}
+
+.fullHeight {
+  height: 100%;
+  -webkit-transition-duration: 2s;
+  -moz-transition-duration: 2s;
+  transition-duration: 2s;
+}
+
+.b-txt {
+  color: white;
+  text-decoration: none;
+}
+/*利用边框实现画圆*/
+form {
+  position: relative;
+  display: block;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  margin-left: 0;
+  padding: 0;
+  margin-bottom: 10px;
+  border: 4px solid #D96F32;
+  border-radius: 50%;
+  -webkit-transition: all 0.25s ease 0.3s;
+  -moz-transition: all 0.25s ease 0.3s;
+  transition: all 0.25s ease 0.3s;
+  cursor: pointer;
+}
+/*利用边框画放大镜手柄*/
+form:before {
+  top: 90%;
+  left: 90%;
+  width: 16px;
+  height: 3px;
+  background-color: #D96F32;
+  border-radius: 1px;
+  -webkit-transition: width 0.15s ease 0.55s;
+  -moz-transition: width 0.15s ease 0.55s;
+  transition: width 0.15s ease 0.55s;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transform-origin: top left;
+  -moz-transform-origin: top left;
+  -ms-transform-origin: top left;
+  -o-transform-origin: top left;
+  transform-origin: top left;
+}
+form input {
+  width: 100%;
+  height: 100%;
+  padding: 0 30px 0 15px;
+  font-size: 14px;
+  line-height: 38px;
+  opacity: 0;/*框架没有张开前输入框透明*/
+  background-color: transparent;
+  color: white;
+  -webkit-transition: opacity 0.15s ease;
+  -moz-transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease;
+}
+/*放大镜点击区域*/
+.fdj {
+  display: block;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  z-index: 20;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  -webkit-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+/*用css3实现十字叉*/
+.fdj:before, .fdj:after {
+  right: 5px;
+  height: 2px;
+  width: 2px;
+  border-radius: 1px;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+
+.fdj:before {
+  top: 0px;
+  background-color: #D96F32;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-transform-origin: top right;
+  -moz-transform-origin: top right;
+  -ms-transform-origin: top right;
+  -o-transform-origin: top right;
+  transform-origin: top right;
+  -webkit-transition-delay: 0.1s;
+  -moz-transition-delay: 0.1s;
+  transition-delay: 0.1s;
+}
+.fdj:after {
+  bottom: 0px;
+  background-color: #D96F32;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transform-origin: bottom right;
+  -moz-transform-origin: bottom right;
+  -ms-transform-origin: bottom right;
+  -o-transform-origin: bottom right;
+  transform-origin: bottom right;
+  -webkit-transition-delay: 0s;
+  -moz-transition-delay: 0s;
+  transition-delay: 0s;
+}
+/*交互框张开后的属性*/
+form.open {
+  width: 260px;
+  border-radius: 20px;
+  -webkit-transition-delay: 0.1s;
+  -moz-transition-delay: 0.1s;
+  transition-delay: 0.1s;
+}
+form.open:before {
+  width: 0px;
+  -webkit-transition-delay: 0s;
+  -moz-transition-delay: 0s;
+  transition-delay: 0s;
+}
+form.open input {
+  opacity: 1;/*框架没有张开后输入框不透明*/
+  -webkit-transition-delay: 0.15s;
+  -moz-transition-delay: 0.15s;
+  transition-delay: 0.15s;
+}
+/*框架没有张开后显示小叉*/
+form.open .fdj:before, form.open .fdj:after {
+  width: 15px;
+  right: 12px;
+}
+form.open .fdj:before {
+  top: 9px;
+  -webkit-transition-delay: 0.25s;
+  -moz-transition-delay: 0.25s;
+  transition-delay: 0.25s;
+}
+form.open .fdj:after {
+  bottom: 9px;
+  -webkit-transition-delay: 0.3s;
+  -moz-transition-delay: 0.3s;
+  transition-delay: 0.3s;
+}
+
+/*定义查询到的条目样式 以及动画预定义*/
+ul {
+  margin-left: 0;
+  padding-left: 0;
+  width: 80%;
+}
+ul a {
+  text-decoration: none;
+  color: black;
+}
+ul a h1 {
+  font-size: 18px;
+}
+ul a p {
+  font-size: 14px;
+}
+ul li {
+  list-style-type: none;
+  display: block;
+  margin-bottom: 10px;
+  padding: 15px 30px 5px 30px;
+  background-color: #E7E7E8;
+  opacity: 0;
+  -webkit-animation: new-item 1s ease-in-out forwards;
+  -moz-animation: new-item 1s ease-in-out forwards;
+  animation: new-item 1s ease-in-out forwards;
+  -webkit-transition-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
+  -moz-transition-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
+  transition-timing-function: cubic-bezier(0.6, 0, 0.4, 1);
+}
+/*定义条目选中时的提醒标记，利用定义左边框属性实现*/
+ul li:hover {
+  border-left: 5px solid #D96F32;
+  margin-left: -5px;
+}
+
+.hide {
+  display: none;
+}
+
+form:before, .fdj:before, .fdj:after {
+  content: '';
+  position: absolute;
+  display: block;
+}
+
+/*下面定义动画效果，主要是查询到的内容的飞入加载，并逐渐不透明（显示出来）*/
+@-webkit-keyframes new-item {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(2000px);
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+@-moz-keyframes new-item {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(2000px);
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+@keyframes new-item {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(2000px);
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+</style>    
+    </head>
+    <body>
+<main ng-app="xdsWikiApp" ng-controller="xdsMain">
+  <div id="search" class="wrapper fullHeight"><a href="http://zh.wikipedia.org/wiki/Special:Random" target="_blank" class="b-txt">点击搜索随机文章</a><br/>
+    <form ng-submit="search()">
+      <input type="text" ng-model="searchTxt"/>
+      <div class="fdj"></div>
+    </form>
+    <p id="help" class="b-txt">点击图标开始搜索</p>
+  </div>
+  <div class="wrapper">
+    <ul><a ng-href="{{result.page}}" target="_blank" ng-repeat="result in results">
+        <li>
+          <h1>{{result.title}}</h1>
+          <p>{{result.body}}</p>
+        </li></a></ul>
+  </div>
+</main>
+</body>
+
+<script>
+var app = angular.module('xdsWikiApp', ['ngAnimate']);
+app.controller('xdsMain', function($scope, $http, $timeout) {
+  var form = $('form');
+  var close = $('.fdj');
+  var input = $('input');
+  var search = $("#search");
+  var help = $("#help");
+  
+  $scope.results = [];
+
+  close.on('click', function() {// 通过fdj类实现切换显示/隐藏 搜索框
+    form.toggleClass('open');//通过对form元素添加/取消 open类实现具体的显示
+    
+    if (!form.hasClass('open') && $scope.searchTxt !== '' && typeof $scope.searchTxt !== 'undefined') {//通过判断是否已经搜索显示结果区域和隐藏帮助
+	    search.toggleClass('fullHeight')
+      help.toggleClass('hide');
+      $scope.searchTxt = '';
+    } 
+    $scope.results = [];//初始化结果接受对象
+    $scope.$apply();
+  })
+
+  input.on('transitionend webkitTransitionEnd oTransitionEnd', function() {
+    if (form.hasClass('open')) {
+      input.focus();
+    } else {
+      return;
+    }
+  })
+
+  $scope.search = function() {//实际搜索的处理
+    $scope.results = [];
+    help.addClass('hide');
+    search.removeClass('fullHeight');
+    var title = input.val();//获取搜索的主题
+    var api = 'http://zh.wikipedia.org/w/api.php?format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=10&prop=pageimages|extracts&pilimit=max&exintro&explaintext&exsentences=1&exlimit=max&gsrsearch=';//api接口
+    var cb = '&callback=JSON_CALLBACK';//回调接口定义
+    var page = 'http://zh.wikipedia.org/?curid=';//用于展示结果的基础URL部分
+    
+    $http.jsonp(api + title + cb)
+    .success(function(data) {
+      var results = data.query.pages;
+      angular.forEach(results, function(v,k)  {
+        $scope.results.push({title: v.title, body: v.extract, page: page + v.pageid})//结果推入接收器数组，注意，在数组不为空后，是利用angular的自动机制进行页面填充的，即根据 <a ng-href="{{result.page}}" target="_blank" ng-repeat="result in results">属性进行填充的。
+      })
+    });
+  }
+});
+
+</script>
+
+</html>
