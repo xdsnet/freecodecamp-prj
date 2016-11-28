@@ -6,7 +6,103 @@
         <meta name="author" content="xdsnet">
         <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script><!--引入jquery-->
         <script  src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script><!--引入jquery UI-->
-        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" type="stylesheet"><!--引入相应的图标字体-->
+        <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css" type="stylesheet"><!--引入相应的图标字体-->
+
+<style>
+*{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  vertical-align: baseline;
+}
+div {
+  position: relative;
+  z-index: 2;
+}
+
+body {
+  background-color: #333;
+  color: #333;
+  font-family: sans-serif;
+  font-weight: 400;
+}
+
+.quote-box {
+  border-radius: 3px;
+  position: relative;
+  margin: 8% auto auto auto;
+  width: 550px;
+  padding: 40px 50px;
+  display: table;
+  background-color: #fff;
+}
+
+.quote-box .quote-text {
+  text-align: left;
+  width: 550px;
+  height: auto;
+  clear: both;
+  font-weight: 500;
+  font-size: 1.75em;
+}
+
+.quote-box .quote-author {
+  width: 550px;
+  height: auto;
+  clear: both;
+  padding-top: 20px;
+  font-size: 1em;
+  text-align: right;
+}
+.quote-box .buttons {
+  width: 550px;
+  margin: auto;
+  display: block;
+}
+.quote-box .buttons .button {
+  height: 38px;
+  border: none;
+  border-radius: 3px;
+  color: #fff;
+  background-color: #333;
+  outline: none;
+  font-size: 0.85em;
+  padding: 8px 18px 6px 18px;
+  margin-top: 30px;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.quote-box .buttons .button:hover {
+  opacity: 0.9;
+}
+.quote-box .buttons .button#tweet-fb, .quote-box .buttons .button#tumblr-fb {
+  float: left;
+  padding: 0px;
+  padding-top: 8px;
+  text-align: center;
+  font-size: 1.2em;
+  margin-right: 5px;
+  height: 30px;
+  width: 40px;
+}
+.quote-box .buttons .button#new-quote {
+  float: right;
+}
+.footer {
+  width: 550px;
+  text-align: center;
+  display: block;
+  margin: 15px auto 30px auto;
+  font-size: 0.8em;
+  color: #fff;
+}
+.footer a {
+  font-weight: 500;
+  text-decoration: none;
+  color: #eee;
+}
+</style>        
     </head>
     <body>
 <div class="quote-box">
@@ -21,12 +117,78 @@
     <a class="button" id="tweet-fb" title="在Twitter发布!" target="_blank">
       <i class="fa fa-twitter"></i>
     </a>
+    <!--
     <a class="button" id="tumblr-fb" title="在tumblr发布!" target="_blank">
       <i class="fa fa-tumblr"></i>
     </a>
+    -->
     <button class="button" id="new-quote">新引用</button>
   </div>
 </div>
 <div class="footer"> by <a href="http://codepen.io/xdsnet/">xdsnet</a></div>
     </body>
+
+<script>
+
+// 定义切换颜色组
+var colors = ['#555555', '#33ffee', '#22ccff','#ffee11', '#349823', '#2f4c3e'];
+var currentQuote = '';//  获取的引言文字
+var currentAuthor = '';// 作者
+function tweetURL(c,a){
+  return ('https://twitter.com/intent/tweet?hashtags=quotes&related=freecodecamp&text=' + encodeURIComponent('"' + c + '" ' + a));
+}
+function tumblrURL(c,a){
+  return ('https://www.tumblr.com/widgets/share/tool?data-posttype=quote&data-tags=quotes,freecodecamp&data-caption='+encodeURIComponent(a)+'&data-content=' + encodeURIComponent(c));
+}
+function getQuote() { // 利用ajax获取引言
+  $.ajax({
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    url: 'http://api.tianapi.com/txapi/dictum/?key=9e2835f96e3842d3a4243032a287a16e',
+    success: function(response) {
+      var r=response;
+      currentQuote = r.newslist[0].content;
+      currentAuthor = r.newslist[0].mrname;
+      $('#tweet-fb').attr('href', tweetURL( currentQuote , currentAuthor));
+     // $('#tumblr-fb').attr('href', tumblrURL(currentQuote, currentAuthor));
+      $(".quote-text").animate({ //处理展示动态效果
+          opacity: 0
+        }, 500,
+        function() {
+          $(this).animate({
+            opacity: 1
+          }, 500);
+          $('#text').text(currentQuote);
+        });
+
+      $(".quote-author").animate({ //处理展示动态效果
+          opacity: 0
+        }, 500,
+        function() {
+          $(this).animate({
+            opacity: 1
+          }, 500);
+          $('#author').html(currentAuthor);
+        });
+
+      var color = Math.floor(Math.random() * colors.length);
+
+      $("html body").animate({
+        backgroundColor: colors[color],
+        color: colors[color]
+      }, 1000);
+      $(".button").animate({
+        backgroundColor: colors[color]
+      }, 1000);
+    }
+  });
+}
+$(document).ready(function() {
+  getQuote();
+  $('#new-quote').on('click', getQuote);
+});
+</script>
+
 </html>
