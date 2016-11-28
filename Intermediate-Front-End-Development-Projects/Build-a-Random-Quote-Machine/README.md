@@ -1,5 +1,5 @@
 [返回项目主页](https://github.com/xdsnet/freecodecamp-prj/)  [返回上级](../)
-# 弹幕（Design a danmu app）任务
+# 随机引文(Build a Random Quote Machine)任务
 
 ## 任务要求
 * 一个Web页面
