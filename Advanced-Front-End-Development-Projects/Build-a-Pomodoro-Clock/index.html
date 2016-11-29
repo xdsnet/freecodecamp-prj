@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="xdsnet's 小熊简单循环定时器">
+        <meta name="author" content="xdsnet">
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script><!--引入angular-->
+
+<style>
+* {
+  margin: 0;
+}
+
+html, body, main {
+  height: 100%;
+  overflow: hidden;
+  background-color: #333333;
+}
+
+h1 {
+  display: block;
+  background-color: #333333;
+  margin: 0 auto;
+  color: #ccffee;
+  text-align: center;
+  font-size: 4em;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin: 0 auto;
+  color: #fff;
+  padding: 20px;
+}
+header .session {
+  font-size: .8em;
+  display: flex;
+}
+header .session .jgCtrl, header .session .sessionCtrl{
+  display: inline;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+header .session .resetCtrl {
+  display: inline;
+  text-align: center;
+  margin-top:5px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+header .session .resetCtrl .reseter {
+  background-color: #333333;
+  color: #99CC00;
+  border: none;
+  cursor: pointer;
+  font-size: 3em;
+  outline: none;
+}
+header .session .minus, header .session .plus {
+  background-color: #333333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 2em;
+  outline: none;
+}
+header .session .time {
+  font-size: 2.5em;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+section {
+  background-color: #333333;
+  height: 100%;
+  color: #fff;
+}
+section .title {
+  text-align: center;
+  line-height: 180px;
+  font-size: .8em;
+}
+section .timer {
+  margin: 0 auto;
+  text-align: center;
+  width: 300px;
+  height: 300px;
+  font-size: 4em;
+  border: 2px solid #99CC00;
+  border-radius: 30%;
+  cursor: pointer;
+  position: relative;
+  z-index: 20;
+  overflow: hidden;
+}
+section .timer:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 30%;
+  z-index: 2;
+  border: 4px solid #333333;
+}
+section .fill {
+  content: '';
+  position: absolute;
+  background: #99CC00;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: -1;/*作为背景*/
+}
+
+</style>        
+    </head>
+    <body>
+
+<h1>小熊简单循环定时器</h1>
+<main ng-app="TimerApp" ng-controller="xdsMainCtrl">
+  <header>
+    <div class="session">
+      <div class="jgCtrl">
+        <p>间隔</p>
+        <button ng-click="jgChange(-1)" class="minus">-</button><span class="time">{{jgLength}}</span>
+        <button ng-click="jgChange(1)" class="plus">+</button>
+      </div>
+      <div class="resetCtrl">
+        <button ng-click="reseter()" class="reseter">重置</button>
+      </div>
+      <div class="sessionCtrl">
+        <p>时长</p>
+        <button ng-click="stChange(-1)" class="minus">-</button><span class="time">{{stLength}}</span>
+        <button ng-click="stChange(1)" class="plus">+</button>
+      </div>
+    </div>
+  </header>
+  <section ng-click="toggleTimer()">
+    <div class="timer">
+      <p class="title">{{sessionName}}</p>
+      <p>{{timeLeft}}</p><span ng-style="{'height':fillHeight, 'background':fillColor }" class="fill"></span><!--动态样式的处理，实现内容填充-->
+    </div>
+  </section>
+</main>
+    </body>
+
+<script>
+var app = angular.module('TimerApp', []);
+app.controller('xdsMainCtrl', function($scope, $interval) {
+  $scope.jgLength = 5;
+  $scope.stLength = 25;
+  $scope.timeLeft = $scope.stLength;
+  $scope.fillHeight = '0%';
+  $scope.sessionName = '时长';
+  $scope.currentTotal;
+  
+  var runTimer = false;
+  var secs = 60 * $scope.timeLeft;
+  $scope.originalTime = $scope.stLength;
+  
+  function secondsToHms(d) {
+    d = Number(d);
+    var h = Math.floor(d / 3600);
+    var m = Math.floor((d % 3600) / 60);
+    var s = Math.floor((d % 3600) % 60);
+    return (
+      (h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s
+    ); 
+  }
+
+  // 调整默认时长
+  $scope.stChange = function(time) {
+    if (!runTimer){
+      if ($scope.sessionName === '时长') {
+        $scope.stLength += time;
+        if ($scope.stLength < 1) {
+          $scope.stLength = 1;
+        }
+        $scope.timeLeft = $scope.stLength;
+        $scope.originalTime = $scope.stLength;
+        secs = 60 * $scope.stLength;
+      }
+    }
+  }
+  
+  // 调整默认间隔
+  $scope.jgChange = function(time) {
+    if (!runTimer){
+      $scope.jgLength += time;
+      if ($scope.jgLength < 1) {
+        $scope.jgLength = 1;
+      }
+      if ($scope.sessionName === '间隔!') {
+        $scope.timeLeft = $scope.jgLength;
+        $scope.originalTime = $scope.jgLength;
+        secs = 60 * $scope.jgLength;
+      }
+    }
+  }
+  
+  $scope.toggleTimer = function() {
+    if (!runTimer) {
+      if ($scope.currentName === '时长') {
+        $scope.currentLength = $scope.stLength;
+      } else {
+        $scope.currentLength = $scope.jgLength;
+      }
+      
+      updateTimer();
+      runTimer = $interval(updateTimer, 1000); //循环定时器
+    } else {
+      $interval.cancel(runTimer);
+      runTimer = false;
+    }
+  }
+  
+  function updateTimer() {
+    secs -= 1;
+    if (secs < 0) {
+      // 计数完成
+      
+      // 播放音乐
+      var wav = 'http://www.oringz.com/oringz-uploads/sounds-917-communication-channel.mp3';
+      var audio = new Audio(wav);
+			audio.play();
+      
+      // 状态切换
+      $scope.fillColor = '#333333';
+      if ($scope.sessionName === '间隔!') {
+        $scope.sessionName = '时长';
+        $scope.currentLength = $scope.stLength;
+        $scope.timeLeft = 60 * $scope.stLength;
+        $scope.originalTime = $scope.stLength;
+        secs = 60 * $scope.stLength;
+      } else {
+        $scope.sessionName = '间隔!';
+        $scope.currentLength = $scope.jgLength;
+        $scope.timeLeft = 60 * $scope.jgLength;
+        $scope.originalTime = $scope.jgLength;
+        secs = 60 * $scope.jgLength;
+      }
+    } else {
+      if ($scope.sessionName === '间隔!') {
+        $scope.fillColor = '#ee4444';
+      } else {
+        $scope.fillColor = '#99cc00';
+      }
+	    $scope.timeLeft = secondsToHms(secs);
+      
+      var denom = 60 * $scope.originalTime;
+      var perc = Math.abs((secs / denom) * 100 - 100);
+      $scope.fillHeight = perc + '%';
+    }
+  }
+  
+    // 重置
+  $scope.reseter=function(){
+    if (runTimer) {
+      $interval.cancel(runTimer);
+      runTimer = false;
+    } 
+    $scope.timeLeft = 25 ;
+    $scope.currentName = '时长';
+    $scope.sessionLength = 25;
+    $scope.breakLength =5 ;
+    $scope.fillHeight = 0 + '%';
+  }
+  
+});
+</script>
+
+</html>
