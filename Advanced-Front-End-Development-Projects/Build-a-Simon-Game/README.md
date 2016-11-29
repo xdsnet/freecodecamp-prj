@@ -18,4 +18,4 @@
 * index.html - 入口和所有内容的展示
 
 ## Codepen.io 展示
-[Xdsnet的井字游戏](https://codepen.io/xdsnet/full/woWpyB)
+[Xdsnet的打碟游戏](https://codepen.io/xdsnet/full/woWpyB)
