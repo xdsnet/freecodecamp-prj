@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="xdsnet's 引用机">
+        <meta name="author" content="xdsnet">
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script><!--引入jquery-->
+
+<style>
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: #5599FF;
+}
+
+h1 {
+  margin:0 10px 0 0;
+  color: #3399FF;
+}
+
+h6 {
+  margin: 2px;
+  color: #33FF99;
+}
+
+
+button {
+  height: 50px;
+  border: none;
+}
+
+.xdsnetjsq {
+  text-align: center;
+  width: 300px;
+  height: 390px;
+  border-radius: 10px;
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #448;
+  padding: 5px;
+}
+
+.buttons {
+  width: 275px;
+  text-align: center;
+  margin:10px auto;
+}
+
+.button{
+  float: left;
+  margin: 2px;
+  width: 64.75px;
+  color: #453;
+  background: #fff;
+  cursor: pointer;
+}
+#calc{
+  width:133px;
+}
+.textbox {
+  margin-top: 2px;
+  text-align: right;
+  border: none;
+  height: 25px;
+  width: 275px;
+  background-color: #7799FF;
+}
+</style>        
+    </head>
+    <body>
+<div class="xdsnetjsq">
+  <h1>小熊简单计算器</h1>
+  <h6>支持键盘操作，Delete键等效"全清"，回车键等效"="</h6>
+  <input type="textbox" class="textbox" readonly>
+  <div class="buttons">
+    <button class="button" value="全清">全清</button>
+    <button class="button" value="退格">退格</button>
+    <button class="button" value="%">%</button>
+    <button class="button" value="/">/</button>
+    <button class="button" value="7">7</button>
+    <button class="button" value="8">8</button>
+    <button class="button" value="9">9</button>
+    <button class="button" value="*">*</button>
+    <button class="button" value="4">4</button>
+    <button class="button" value="5">5</button>
+    <button class="button" value="6">6</button>
+    <button class="button" value="-">-</button>
+    <button class="button" value="1">1</button>
+    <button class="button" value="2">2</button>
+    <button class="button" value="3">3</button>
+    <button class="button" value="+">+</button>
+    <button class="button" value=".">.</button>
+    <button class="button" value="0">0</button>
+   
+    <button class="button" value="=" id="calc">=</button>
+  </div>
+</div>
+    </body>
+
+<script>
+var ans = "";
+var aCalc = false;//已经计算了
+var calc = "";
+function chuli(text){
+    if(text==="") return false;
+      if(parseInt(text, 10) == text || text === "." || text === "/" || text === "*" || text === "-" || text === "+" || text === "%") {
+      if(aCalc){
+        calc=text;
+        aCalc=false;
+      }else{
+        calc+=text;
+      }
+      $(".textbox").val(calc);
+    } else if(text === "全清") {
+      calc = "";
+      $(".textbox").val("");
+      aCalc=false;
+    } else if(text === "退格") {
+      calc = calc.slice(0, -1);
+      $(".textbox").val(calc);
+    } else if(text === "=") {
+      ans = eval(calc);  // 在按下等号后执行计算（因为所有的输入只能通过虚拟键盘或者个别按键输入，所以输入内容是安全的，故可以直接采用eval进行计算，否则需要进行容错防备处理）
+      if(typeof ans ==="number"){ //能够进行计算为数字的。
+        $(".textbox").val(ans);
+        calc="";
+        aCalc=true;
+      }
+    }
+}
+$(document).ready(function() {
+  $(document).keypress(function (event) {
+    var text;
+    text=String.fromCharCode( event.which ) ;
+    chuli(text);
+  });
+  $(document).keydown(function (event) {
+    var text;
+    switch(event.keyCode){
+      case 8:text="退格";break;
+      case 12:text="全清";break;
+      case 13:text='=';break;
+      case 46:text="全清";break;
+      default: text="";break;
+    }
+    chuli(text);
+  });
+  $("button").click(function() {
+    var text = $(this).attr("value");
+    chuli(text);
+  });
+});
+</script>
+
+</html>
