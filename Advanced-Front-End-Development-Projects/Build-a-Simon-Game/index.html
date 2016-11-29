@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="xdsnet's 打碟游戏">
+        <meta name="author" content="xdsnet">
+        <script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script><!--引入jquery-->
+        <script  src="https://raw.githubusercontent.com/shinnn/AudioContext-Polyfill/master/audiocontext-polyfill.js"></script><!--引入audiocontext-polyfill.js，处理简化音频接口-->
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=VT323|Oswald');
+
+/* 基本清除，设置系列默认属性 */
+html, body, div, span, applet, object, iframe,
+ h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+ a, abbr, acronym, address, big, cite, code,
+ del, dfn, em, img, ins, kbd, q, s, samp,
+ small, strike, strong, sub, sup, tt, var,
+ b, u, i, center,
+ dl, dt, dd, ol, ul, li,
+ fieldset, form, label, legend,
+ table, caption, tbody, tfoot, thead, tr, th, td,
+ article, aside, canvas, details, embed, 
+ figure, figcaption, footer, header, hgroup, 
+ menu, nav, output, ruby, section, summary,
+ time, mark, audio, video {
+ 	margin: 0;
+ 	padding: 0;
+ 	border: 0;
+ 	font-size: 100%;
+ 	font: inherit;
+ 	vertical-align: baseline;
+  
+   /* 禁止鼠标选择 */
+  -webkit-user-select: none; /* Chrome/Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+
+  /* 对于未指定的浏览器 */
+  -o-user-select: none;
+  user-select: none;
+ }
+
+
+html{
+ background-image: url('http://cdn.backgroundhost.com/backgrounds/subtlepatterns/purty_wood.png');
+}
+.inline{
+  display: inline-block;
+}
+
+.push{
+  position  : relative;
+  width:140px;
+  height:140px;
+  border-radius:40%;
+  background-color : grey;
+  border: 12px solid #333;
+}
+
+.rw{
+  margin-bottom:-4px;
+}
+
+.wrap{
+  width: 840px;
+  position: relative;
+  text-align: center;
+  margin:auto;
+  top:10vh;
+}
+
+.wrap-in{
+  width: 840px;
+  position: relative;
+  top: 12px;
+  box-shadow: 0px 0px 12px #f00;
+  padding: 4px;
+  background-color: #655E64;
+}
+.header{
+  background-color: #0d6095;
+  width: 140px;
+  margin: 0 auto auto auto;
+  box-shadow: 0px 2px 3px #F5DC20;
+}
+.footer{
+  width:620px;
+  height:120px;
+  margin: 20px auto auto auto;
+}
+
+.brand{
+  font-family:  cursive;
+  color: #EC640F;
+  font-size: 3.2em;
+  margin-top : 35px;
+}
+
+.brand .small{
+  font-size : 0.3em;
+  position : relative;
+  top : -20px;
+}
+
+.count{
+  font-family: 'VT323', monospace;
+  color : #DC0D29;
+  padding : 0px;
+  font-size : 2em;
+  width : 50px;
+  background-color: #32050C;
+  position:relative;
+  border : 4px solid #222;
+  border-radius : 10px;
+  margin:auto;
+}
+
+.round-btn{
+  width : 20px;
+  height : 20px;
+  position: relative;
+  background-color : yellow;
+  border-radius : 100%;
+  border : 4px solid #444;
+  box-shadow : 0px 2px 3px #222;
+  margin:auto;
+  top : -5px;
+}
+
+.round-btn:active{
+    box-shadow : 0 1px 1px #292929;
+    top : -4px;
+}
+
+.r-btn{
+  width : 20px;
+  height : 20px;
+  position: relative;
+  border-radius : 20%;
+  border : 2px solid #444;
+  box-shadow : 0px 2px 3px #222;
+  margin:auto;
+  top : -5px;
+}
+
+.r-btn:active{
+    box-shadow : 0 1px 1px #292929;
+    top : -4px;
+}
+
+.clickable{
+  pointer-events : auto;
+  cursor:pointer;
+}
+
+.unclickable{
+  pointer-events:none;
+}
+
+.led,.level-led{
+  width:6px;
+  height:6px;
+  background-color: #32050C;
+  border-radius : 100%;
+  position: absolute;
+  left:0;
+  right: 0;
+  margin : auto;
+  border: 2px solid #222;
+  top: -18px;
+}
+
+.led-on,.level-led-on{
+  background-color:#DC0D29;
+}
+
+.led-off{
+  color:#430710;
+}
+
+.label{
+  color : #222;
+  font-family : 'Oswald',Arial,sans;
+  font-size:0.7em;
+  margin-top:5px;
+  text-align:center;
+}
+
+.display{
+  width : 60px;
+  position:relative;
+  text-align:center;
+}
+
+.btn-box{
+  width : 50px;
+  position:relative;
+}
+
+.sw-slot{
+  height:20px;
+  width:40px;
+  background-color : #222;
+  position:relative;
+  top:5px;
+  border-radius:2px;
+  cursor: pointer;
+}
+
+.switch{
+  height:16px;
+  width: 16px;
+  border-radius:4px;
+  background-color : #3193DE;
+  position:relative;
+  border : 2px solid #333;
+}
+
+.sw-on{
+  left:20px;
+}
+.rw.bot{
+  margin-top: 10px;
+}
+
+
+.full-red{
+  background-color : #FC0102;
+}
+
+  
+
+/*提示颜色定义*/
+.mc0{
+  background-color : #9f0f17;
+}
+.mc0.liang{
+  background-color : #ff4c4c;
+}
+.mc1{
+  background-color : #00a74a;
+}
+.mc1.liang{
+  background-color : #13ff7c;
+}
+.mc2{
+  background-color : #cca707;
+}
+.mc2.liang{
+  background-color : #fed93f;
+}
+.mc3{
+  background-color : #094a8f;
+}
+.mc3.liang{
+  background-color : #1c8cff;
+}
+.mc4{
+  background-color : #7f4a7f;
+}
+.mc4.liang{
+  background-color : #ff9cff;
+}
+
+
+/* 对移动屏幕进行放缩，放缩比例0.6  */
+@media screen and (max-width: 500px){
+
+  .wrap {
+    top: 40px;
+    
+    -moz-transform: scale(0.6);
+    -ms-transform: scale(0.6);
+    -o-transform: scale(0.6);
+    -webkit-transform: scale(0.6);
+    transform: scale(0.6);
+    
+    -o-transform-origin: 0 0;
+    -ms-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    transform-origin: 0 0;
+    
+    left: 50%;
+    margin-left: -142px;
+  }
+}
+.level2{
+  background-color:#00a74a;
+}
+.level3{
+  background-color:#3333ff;
+}
+.level4{
+  background-color:#ffff4a;
+}
+.level5{
+  background-color:#ff0000;
+}
+
+</style>        
+    </head>
+    <body>
+
+<div class="wrap">
+  <div class="header">
+     <h1 class="brand">打碟<span class="small">®</span></h1>
+  </div>
+<div class="wrap-in">
+
+</div>
+  <div class="footer">
+     <div class="rw">
+
+       <div class="btn-box inline">
+         <div class="r-btn level level2 clickable" id="level2"></div>
+         <h3 class="label">难度1</h3>
+         <div class="level-led" id="level2-led"></div>
+       </div>
+       <div class="btn-box inline">
+         <div class="r-btn level level3 clickable" id="level3"></div>
+         <h3 class="label">难度2</h3>
+         <div class="level-led" id="level3-led"></div>
+       </div>
+       <div class="btn-box inline">
+         <div class="r-btn level level4 clickable" id="level4"></div>
+         <h3 class="label">难度3</h3>
+         <div class="level-led" id="level4-led"></div>
+       </div>
+       <div class="btn-box inline">
+         <div class="r-btn level level5 clickable" id="level5"></div>
+         <h3 class="label">难度4</h3>
+         <div class="level-led" id="level5-led"></div>
+       </div>
+       <div class="display inline">
+         <h1 class="count led-off">--</h1>
+         <h3 class="label">计数</h3>
+       </div>
+       <div class="btn-box inline">
+         <div class="round-btn full-red btn unclickable" id="start"></div>
+         <h3 class="label">开始</h3>
+       </div>
+       <div class="btn-box inline">
+         <div class="round-btn btn unclickable" id="mode"></div>
+         <h3 class="label">严格</h3>
+         <div class="led" id="mode-led"></div>
+       </div>
+     </div>
+     <div class="rw bot">
+       <h3 class="label inline">关</h3>
+       <div class="sw-slot inline">
+         <div class="switch" id="pwr-sw"></div>
+       </div>
+       <h3 class="label inline">开</h3>
+     </div>
+  </div>
+</div>
+
+    </body>
+
+<script>
+
+$(document).ready(function(){
+   var level=3;//难度系数，最高5，最低2，表示出现多少个色块
+function setLevel(level){//根据层次显示课点击数量
+  $(".wrap-in").empty();
+  switch(level){
+    case 5:$(".wrap-in").append("<div class=\"inline push mc4 unclickable\" id='4' ></div>");
+    case 4:$(".wrap-in").append("<div class=\"inline push mc3 unclickable\" id='3' ></div>");
+    case 3:$(".wrap-in").append("<div class=\"inline push mc2 unclickable\" id='2' ></div>");
+    case 2:$(".wrap-in").append("<div class=\"inline push mc1 unclickable\" id='1' ></div>");
+    default:$(".wrap-in").append("<div class=\"inline push mc0 unclickable\" id='0' ></div>");
+  }
+  $('.level-led').removeClass('level-led-on');
+  $("#level"+level+"-led").addClass('level-led-on');
+  $('.push').mousedown(function(){
+      pushColor($(this));
+    });
+}
+function setGameLevel(evt){
+  var id=evt.target.id;
+  var idnum = id.replace("level","");
+  level=parseInt(idnum, 10);
+  setLevel(level);
+}
+
+  // 检测浏览器是否支持Web 音频 API
+  var AudioContext = window.AudioContext // 默认
+    || window.webkitAudioContext // 对于Safari或者老版本的Chrome
+    || false;
+
+  if(!AudioContext) {
+
+    // 报警
+    alert('抱歉，因为你的浏览器不支持Web音频功能。'
+    + ' 请下载最新版本的'
+    + 'Google Chrome或者Mozilla Firefox');
+
+  } else {
+
+    // 能够进行游戏
+    var audioCtx = new AudioContext(); //web音频接口
+
+    var frequencies = [630,470,415,310,252]; // 定义频率，对应值也可以是 => [415,310,252,209] [329.63,261.63,220,164.81];
+   
+
+    
+    // 创建出错振荡器（后面也要用到）
+    // 振荡器 有5种类型（sine/正弦、square/方、sawtooth/锯齿、triangle/三角和custom/定制）
+    var errOsc = audioCtx.createOscillator(); 
+    errOsc.type = 'triangle';
+    errOsc.frequency.value = 110;
+    errOsc.start(0.0); // 对于Safari的可选参数修正
+    var errNode = audioCtx.createGain();
+    errOsc.connect(errNode);
+    errNode.gain.value = 0;
+    errNode.connect(audioCtx.destination);
+
+    var ramp = 0.1; //定义播放时间偏移
+    var vol = 0.5;
+
+    var gameStatus = {};
+
+    gameStatus.reset = function(){
+      this.init();
+      this.strict = false;
+    }
+
+    gameStatus.init = function(){
+      this.lastPush = $('#0');
+      this.sequence = [];
+      this.tStepInd = 0;
+      this.index = 0;
+      this.count = 0;
+      this.lock = false;
+      setLevel(level);
+    };
+
+    // 创建振荡器 5个音频的
+    var oscillators = frequencies.map(function(frq){
+      var osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = frq;
+      osc.start(0.0);  // 对于Safari的可选参数修正
+      return osc;
+    });
+    // 创建对应的播放增益调节5个
+    var gainNodes = oscillators.map(function(osc){
+      var g = audioCtx.createGain();
+      osc.connect(g);
+      g.connect(audioCtx.destination);
+      g.gain.value = 0; //预设静音
+      return g;
+    });
+
+    //播放某个节点
+    function playGoodTone(num){
+      gainNodes[num].gain
+        .linearRampToValueAtTime(vol, audioCtx.currentTime + ramp);
+      gameStatus.currPush = $('#'+num);
+      gameStatus.currPush.addClass('liang');
+    };
+    
+    // 停止正确播放节点
+    function stopGoodTones(){
+      if(gameStatus.currPush)
+        gameStatus.currPush.removeClass('liang');
+      gainNodes.forEach(function(g){
+        g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + ramp);
+      });
+      gameStatus.currPush = undefined;
+      gameStatus.currOsc = undefined;
+    };
+    //播放错误提醒
+    function playErrTone(){
+      errNode.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + ramp);
+    };
+    // 停止错误提醒
+    function stopErrTone(){
+      errNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + ramp);
+    };
+    // 开始游戏
+    function gameStart(){
+      resetTimers();
+      stopGoodTones();
+      stopErrTone();
+      $('.count').text('--').removeClass('led-off');
+      flashMessage('--',1);
+      gameStatus.init();
+      addStep();
+    }
+    // 设置每步间隔ms
+    function setTimeStep(num){
+      var tSteps = [1250 , 1000 , 750, 500 ];
+      if (num < 4)
+        return tSteps[0];
+      if (num < 8)
+        return tSteps[1];
+      if (num < 12)
+        return tSteps[2];
+      return tSteps[3];
+    }
+    // 提醒错误
+    function notifyError(pushObj){
+      gameStatus.lock = true;
+      $('.push').removeClass('clickable').addClass('unclickable');
+      playErrTone();
+      if(pushObj)
+        pushObj.addClass('liang');
+      gameStatus.toHndl = setTimeout(function(){
+        stopErrTone();
+        if(pushObj)
+          pushObj.removeClass('liang');
+        gameStatus.toHndlSt = setTimeout(function(){
+          if(gameStatus.strict)
+            gameStart()
+            else
+              playSequence();
+        },1000);
+      },1000);
+      flashMessage('!!',2);
+    };
+    // 提醒胜利
+    function notifyWin(){
+      var cnt = 0;
+      var last = gameStatus.lastPush.attr('id');
+      gameStatus.seqHndl = setInterval(function(){
+        playGoodTone(last);
+        gameStatus.toHndl = setTimeout(stopGoodTones,80);
+        cnt++;
+        if(cnt === 8){
+          clearInterval(gameStatus.seqHndl);
+        }
+      },160);
+      flashMessage('**',2);
+    }
+    // 快闪消息
+    function flashMessage(msg,times){
+      $('.count').text(msg);
+      var lf = function(){
+        $('.count').addClass('led-off');
+        gameStatus.toHndlFl = setTimeout(function(){
+          $('.count').removeClass('led-off');
+        },250);
+      };
+      var cnt = 0;
+      lf();
+      gameStatus.flHndl = setInterval(function(){
+        lf();
+        cnt++;
+        if(cnt === times)
+          clearInterval(gameStatus.flHndl);
+      },500)
+    };
+    //显示计数
+    function displayCount(){
+      var p = (gameStatus.count < 10) ? '0' : '';
+      $('.count').text(p+(gameStatus.count+''));
+    }
+    //播放音频
+    function playSequence(){
+      var i = 0;
+      gameStatus.index = 0;
+      gameStatus.seqHndl = setInterval(function(){
+        displayCount();
+        gameStatus.lock = true;
+        playGoodTone(gameStatus.sequence[i]);
+        gameStatus.toHndl = setTimeout(stopGoodTones,gameStatus.timeStep/2 - 10);
+        i++;
+        if(i === gameStatus.sequence.length){
+          clearInterval(gameStatus.seqHndl);
+          $('.push').removeClass('unclickable').addClass('clickable');
+          gameStatus.lock = false;
+          gameStatus.toHndl = setTimeout(notifyError,5*gameStatus.timeStep);
+        }
+      },gameStatus.timeStep);
+    };
+    // 添加步骤
+    function addStep(){
+      gameStatus.timeStep = setTimeStep(gameStatus.count++);
+      gameStatus.sequence.push(Math.floor(Math.random()*level));
+      gameStatus.toHndl=setTimeout(playSequence,500);
+    };
+    // 清除相应定时器
+    function resetTimers(){
+      clearInterval(gameStatus.seqHndl);
+      clearInterval(gameStatus.flHndl);
+      clearTimeout(gameStatus.toHndl);
+      clearTimeout(gameStatus.toHndlFl);
+      clearTimeout(gameStatus.toHndlSt);
+    };
+    // 放置颜色
+    function pushColor(pushObj){
+      if(!gameStatus.lock) {
+        clearTimeout(gameStatus.toHndl);
+        var pushNr = pushObj.attr('id');
+        if( pushNr == gameStatus.sequence[gameStatus.index]
+            && gameStatus.index < gameStatus.sequence.length){
+
+          playGoodTone(pushNr);
+          gameStatus.lastPush = pushObj;
+          gameStatus.index++;
+          if(gameStatus.index < gameStatus.sequence.length){
+            gameStatus.toHndl = setTimeout(notifyError,5*gameStatus.timeStep);
+          }else if (gameStatus.index == 20){
+            $('.push').removeClass('clickable').addClass('unclickable');
+            gameStatus.toHndl = setTimeout(notifyWin,gameStatus.timeStep);
+          }else{
+            $('.push').removeClass('clickable').addClass('unclickable');
+            addStep();
+          }
+        }else{
+          $('.push').removeClass('clickable').addClass('unclickable');
+          notifyError(pushObj);
+        }
+      }
+    }
+
+    // 鼠标交互实现 开始
+
+    //难度切换按钮
+    $('.level').click(setGameLevel);
+
+    $('.push').mousedown(function(){
+      pushColor($(this));
+    });
+
+    $('*').mouseup(function(e){
+      e.stopPropagation();
+      if(!gameStatus.lock)
+        stopGoodTones();
+    });
+    // 鼠标交互实现 结束
+    
+    // 切换严格模式
+    function toggleStrict(){
+      $('#mode-led').toggleClass('led-on');
+      gameStatus.strict = !gameStatus.strict;
+    }
+    
+    // 开始开关交互处理
+    $('.sw-slot').click(function(){
+      $('#pwr-sw').toggleClass('sw-on');
+      if($('#pwr-sw').hasClass('sw-on')==false){
+        gameStatus.reset();
+        $('.count').text('--');
+        $('.count').addClass('led-off');
+        $('#mode-led').removeClass('led-on');
+        $('.push').removeClass('clickable').addClass('unclickable');
+        $('#start').off('click');
+        $('#mode').off('click');
+        $('.btn').removeClass('clickable').addClass('unclickable');
+        $('.level').removeClass('unclickable').addClass('clickable');
+        $('.level').click(setGameLevel);
+        resetTimers();
+        stopGoodTones();
+        stopErrTone();
+      }else{
+        $('.btn').removeClass('unclickable').addClass('clickable');
+        $('.level').removeClass('clickable').addClass('unclickable');
+        $('.count').removeClass('led-off');
+        $('.level').off('click');
+        $('#start').click(gameStart);
+        $('#mode').click(toggleStrict);
+      }
+    });
+
+    gameStatus.reset();
+
+  }
+});
+</script>
+
+</html>
