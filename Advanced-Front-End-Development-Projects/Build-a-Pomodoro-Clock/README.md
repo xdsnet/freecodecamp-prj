@@ -19,4 +19,4 @@
 * index.html - 入口和所有内容的展示
 
 ## Codepen.io 展示
-[Xdsnet的随机引用机](https://codepen.io/xdsnet/full/gLrRoB)
+[小熊简单循环定时器](https://codepen.io/xdsnet/full/gLrRoB)
