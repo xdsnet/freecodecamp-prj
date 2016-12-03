@@ -1,0 +1,14 @@
+{
+  "name": "build-a-markdown-previewer",
+  "version": "1.0.0",
+  "description": "npm这里只作为依赖管理",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "xdsnet",
+  "license": "ISC",
+  "dependencies": {
+    "node-sass": "^3.13.0"
+  }
+}
