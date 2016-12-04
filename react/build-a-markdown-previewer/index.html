@@ -13,36 +13,44 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script><!--引入marked-->
         <link href="index.css" rel="stylesheet"><!--引入sass编译后样式-->
     </head>
-    <body>
-<div class="container" id="main">
+<body>
+<div class="wrapper">
+    <div class="page-header col-center-block">
+        <h3>markdown预览器</h3>
+    </div>
+    <div class="container" id="main">
+    </div>
+    <div class="page-footer">
+        powerBy xdsnet (use<a href="https://facebook.github.io/react/">React</a> and <a href="https://github.com/chjj/marked">marked</a> and <a href="https://github.com/babel/babel-standalone">babel-standalone</a>)
+    </div>
 </div>
-    </body>
+</body>
 
 <script type="text/babel">
-var MarkAll = React.createClass({
-    updateValue:function(modifiedValue){
+var MarkDownAll = React.createClass({
+    updateValue:function(inValue){
         this.setState({
-            value: modifiedValue
+            value: inValue
         })
     },
     getInitialState:function(){
         return{
-            value:'标题\n=======\n\n子标题\n-----------\n \n### 其他头部内容\n \n段落\n一个空行.\n\nLeave 2 spaces at the end of a line to do a  \nline break\n\nText attributes *italic*, **bold**, \n`monospace`, ~~strikethrough~~ .\n\nShopping list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. apples\n  2. oranges\n  3. pears\n\nThe rain---not the reign---in\nSpain.\n\n *[Herman Fassett](http://freecodecamp.com/hermanfassett)*'
+            value:'标题\n=======\n\n子标题\n-----------\n \n### 其他头部内容\n \n段落\n一个空行.\n\n在换行前有2个空白字符  \n换行后\n\n文字属性效果*斜体(italic)*, **加重(bold)**, \n`等宽(代码monospace)`, ~~删除(strikethrough)~~ .\n\n无序列表:\n\n  * apples\n  * oranges\n  * pears\n\n有序列表:\n\n  1. apples\n  2. oranges\n  3. pears\n\n道生一，一生万物---by \n老子.\n\n *[链接效果](http://freecodecamp.com/hermanfassett)*'
         }
     },
-    rawMarkup: function(value) {
-      var rawMarkup = marked(value, {sanitize: true});
-      return { __html: rawMarkup };
+    outMarkup: function(value) {
+      var outMarkup = marked(value, {sanitize: true});
+      return { __html: outMarkup };
     },
     render:function(){
         return (
           <div className="row">
-            <div className="col-md-6">
-              <RawInput value={this.state.value} updateValue={this.updateValue}/>
-            </div>
-            <div className="col-md-6">
-              <span dangerouslySetInnerHTML={this.rawMarkup(this.state.value)} />
-            </div>
+                <div className="col-md-6">
+                <RawInput value={this.state.value} updateValue={this.updateValue}/>
+                </div>
+                <div className="col-md-6">
+                <span dangerouslySetInnerHTML={this.outMarkup(this.state.value)} />
+                </div>
           </div>
         );
     }
@@ -50,15 +58,15 @@ var MarkAll = React.createClass({
  
 var RawInput = React.createClass({
     update:function(){
-        var modifiedValue=this.refs.inputValue.getDOMNode().value;
-        this.props.updateValue(modifiedValue);
+        var inValue=this.refs.inputValue.value;
+        this.props.updateValue(inValue);
     },
     render:function(){
-        return (<textarea rows="22" type="text" ref="inputValue" value={this.props.value} onChange={this.update} className="form-control" />)
+        return (<textarea rows="20" type="text" ref="inputValue" value={this.props.value} onChange={this.update} className="form-control" />)
     }
 });
  
-ReactDOM.render(<MarkAll />,document.getElementById("main"));
+ReactDOM.render(<MarkDownAll />,document.getElementById("main"));
 
 </script>
 
