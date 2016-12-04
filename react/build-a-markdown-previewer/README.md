@@ -19,6 +19,7 @@
 * index.html - 入口和所有内容的展示
 * index.sass - SASS语法的样式文件，将编译输出`index.css`文件供`index.html`引入
 * sass2css.js - 利用`node-sass`编译`index.sass`的脚本
+* package.json - npm管理用的配置文件，clone后执行`npm install`即可自动编译输出相关文件，使得`index.html`达到可用状态
 
 ## Codepen.io 展示
 [Xdsnet的markdown预览器](https://codepen.io/xdsnet/full/gLvveb)
