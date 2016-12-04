@@ -1,22 +1,32 @@
 var nodeSass=require("node-sass")
-var fs=("fs")
+var fs=require("fs")
 nodeSass.render({
-    data: ".container\n  margin-top:15px\n.col-center-block\n  float: none\n  display: block\n  margin-left: auto\n   margin-right: auto\ntextarea\n  resize: vertical\n  height: 100%",
+    file:"index.sass",
     error: function(error) {
         console.log(error)
     },
     success: function(css){
         console.log(css)
-    }
+    },
+    outFile:"index.css",
+    outputStyle:"compressed"
 }, function(error, result) { // node-style callback from v3.0.0 onwards
     if(!error){
-        console.log(result)
+        console.log("OutCss:\n"+result.css.toString())
       // No errors during the compilation, write this result on the disk
-      fs.writeFile("index.css", result, function(err){
+      fs.writeFile("index.css", result.css, function(err){
         if(!err){
           //file written on disk
-           console.log("ok")
+           console.log("OutCss Ok")
+        }else{
+            console.log("wirteErr");
         }
       });
+    }else{
+        console.log("sass Err");
+        console.log(error.status); // used to be "code" in v2x and below
+        console.log(error.column);
+        console.log(error.message);
+        console.log(error.line);
     }
 })
