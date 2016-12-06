@@ -6,6 +6,7 @@ var FormControl = ReactBootstrap.FormControl;
 var ButtonToolbar = ReactBootstrap.ButtonToolbar;
 var Modal = ReactBootstrap.Modal;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+var ControlLabel=ReactBootstrap.ControlLabel
 var ListGroup = ReactBootstrap.ListGroup;
 var ListGroupItem = ReactBootstrap.ListGroupItem;
 
@@ -149,12 +150,14 @@ var CaipinAdd = React.createClass({
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <ControlLabel>菜品</ControlLabel>
             <FormControl
               id="cpname"
               type="text"
               label="菜品"
               placeholder="菜品名"
               />
+            <ControlLabel>食材</ControlLabel>
             <FormControl
                 id="shicais"
                 type="textarea"

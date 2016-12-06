@@ -17,6 +17,7 @@
 1. 本地存储保存食谱信息，最好在键名中加上一定的前缀以防止冲突，例如：`_username-recipes`
 1. 想使用React的JSX语法，你需要使用[https://github.com/babel/babel-standalone](https://github.com/babel/babel-standalone)提供的Babel作为预处理器
 1. 因为要使用sass编写样式(sass模式)，所以引入npm做项目依赖管理并进行sass到css的处理
+1. 注意不同版本的React-Bootstrap中部分接口发生了较大变化，以往一些api已经失效
 
 
 ## 项目结构
