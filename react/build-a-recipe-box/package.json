@@ -1,0 +1,15 @@
+{
+  "name": "build-a-recipe-box",
+  "version": "1.0.0",
+  "description": "npm这里只作为依赖管理",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish":"node ./sass2css.js"
+  },
+  "author": "xdsnet",
+  "license": "ISC",
+  "dependencies": {
+    "node-sass": "^3.13.0"
+  }
+}
