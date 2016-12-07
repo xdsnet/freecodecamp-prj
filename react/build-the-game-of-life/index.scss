@@ -1,0 +1,40 @@
+//定义部分变量，方便后续处理
+
+$alive: #fbb;/* 新细胞颜色*/
+$old: #e44; /* 老细胞颜色*/
+$dead: #000; /*死亡，不存活颜色*/
+
+$bezel-background: #333; /*挡板背景色*/
+$bezel-dark: #222; /* 挡板深色*/
+
+$cell-size: 10px; //细胞尺寸
+$cell-font-size: 9px; //细胞字体尺寸
+
+body {
+	margin: 0;
+	padding: 0;
+	align-content: center;
+}
+.cell { /*细胞的定义*/
+	font-size: $cell-font-size;
+	width: $cell-size;
+	height: $cell-size;
+	border-top: 1px solid $bezel-background;
+	border-left: 1px solid $bezel-dark;
+	margin: 0px;
+	float: left;
+  	border-radius: none;
+}
+
+.cell:nth-child(70n + 1) {
+	clear: both;
+}
+.alive {
+	background: $alive;
+}
+.old {
+	background: $old;
+}
+.dead {
+	background: $dead;
+}
