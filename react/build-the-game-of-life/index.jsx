@@ -161,7 +161,7 @@ var Footer = React.createClass({
 			$('#gameshow').css({"width": "650px", "height": "390px"});
 			activateBoard();
 			this.setState({size:{s:"primary",m:"default",l:"default"}});
-			console.log("w: " + width + " h: " + height);
+			//console.log("w: " + width + " h: " + height);
 
 		},
 		oz70(){
@@ -193,7 +193,7 @@ var Footer = React.createClass({
 			$('#gameshow').css({"width": "900", "height": "720"});
 			activateBoard();
 			this.setState({size:{s:"default",m:"default",l:"primary"}});
-			console.log("w: " + width + " h: " + height);
+			//console.log("w: " + width + " h: " + height);
 		},
 		slow(){
 			delay = 200;
@@ -355,7 +355,7 @@ function activateBoard() { // 对于点选的一个细胞，设置状态（取�
 			board[cellNum].status = "cell alive";
 		}
 		drawBoard();
-		console.log(cellNum + " " + board[cellNum].status);
+		//console.log(cellNum + " " + board[cellNum].status);
 	})
 };
 
