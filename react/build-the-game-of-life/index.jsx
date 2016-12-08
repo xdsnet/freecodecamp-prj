@@ -121,8 +121,16 @@ var Header = React.createClass({
 					</Modal.Header>
 					<Modal.Body>
 						<p>
-							细胞生命模拟是在一个无限的二维矩形网格上播放演示细胞繁殖演化的程序。
+							细胞生命模拟是在一个无限的二维矩形网格上播放演示细胞繁殖演化的程序。游戏在如下的一个HxW区域内进行模拟。
 						</p>
+						<pre>
+[<br/>
+0,         1,...,       W-2, W-1,<br/>
+W,       W+1,...,      2W-2, 2W-1,<br/>
+.................................<br/>
+(H-1)W, (H-1)W+1,...,  HW-2, HW-1<br/>
+]
+</pre>
 						<p>
 							每个细胞都可以是"存活"或者"死亡"状态。每个细胞的状态取决于其周围与之接触
 							的细胞（共8个——上下左右4个位置和斜线相邻的4个位置）。具体有这样一些规则
@@ -132,8 +140,11 @@ var Header = React.createClass({
 								<ul>
 									<li>如果存活细胞周围有2-3个存活细胞，则它继续存活</li>
 									<li>如果死亡细胞周围有3个存活细胞，则它变为活</li>
+									<li>其他情况该细胞死亡</li>
 								</ul>
-								<li>每次应用上述规则，代数都增加1</li>
+								<li>每次对所有细胞应用一遍上述规则产生新一代情况，代数都增加1</li>
+								<li>区域是球形展开区域，即模拟区域中，"0"，"W-1","(H-1)W","HW-1"这4个点是相邻的。
+								</li>
 							</ol>
 						</p>
 						<p>
@@ -384,79 +395,6 @@ function runIt() {
 
 
 function cellCheck(i) { //检测周边存活情况
-
-  console.log("i="+i);
-	// 四个角点相邻元素为 0*width，width-1，(height-1)*width， height*width-1
-	/*
-	var e0=[
-		cells-2,cells-1,cells-width,
-		width-1,        1,
-	  2*width-1,	width,	width-1,
-
-	];
-	var ew=[ // i==width-1
-		cells-2,cells-1,cells-width,
-		width-2,				0,
-		2*width-2	,2*width-1,width
-
-	];
-	var eh=[ // i== (height-1)*width
-			(height-1)*width-1,(height-2)*width,(height-2)*width+1,
-			cells-1,		(height-1)*width+1,(height-2)*width,
-			width-1,	0,	1
-
-	];
-	var ewh=[  i==cells-1 == height*width-1
-			cells-2-width, cells-1-width,
-			cells-2,   (height-1)*width,
-			width-1, 0,   1
-	];
-	*/
-
-	// 四个边缘的相邻元素（非顶点） Math.floor(i/width)===0 x=[h,0,1]
-	//
-	/*
- 	lm1=Math.floor(i/width);
-	if(lm1===0){
-		lm0=height-1;
-		lm2=1;
-	}
-	if(lm1===height-1){
-		lm0=height-2;
-		lm2=0;
-	}
-
-	if(lm1!==0 && lm1!==(height-1)){
-		lm0=lm1-1;
-		lm2=lm1+1;
-	}
-
-	tm1=i%width;
-	if(tm1===0){
-		tm0=width-1;
-		tm2=1;
-	}
-	if(tm1===width-1){
-		tm0=tm1-1;
-		tm2=0;
-	}
-	if(tm1!==0 && tm1!==(width-1)){
-		tm0=tm1-1;
-		tm2=tm1+1;
-	}
-	*/
-
-	// 普通位置相邻元素为(非边缘)
-	/*
-	Math.floor(i/width -1 )*width + i%width-1
-	Math.floor(i/width -1 )*width + i%width
-	Math.floor(i/width -1 )*width + i%width+1
-	Math.floor(i/width)*width + i%width-1
-	Math.floor(i/width)*width + i%width+1
-	Math.floor(i/width+1)*width + i%width-1
-	Math.floor(i/width +1 )*width + i%width
-	Math.floor(i/width +1 )*width + i%width+1
-	*/
 	var count = 0;
 	var borderCell = 0;
 	var j;
