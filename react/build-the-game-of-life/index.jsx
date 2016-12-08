@@ -5,30 +5,7 @@ var cells = width * height; //细胞数
 var running = 0; // 控制是否运行的参数
 var delay = 50; // 控制速度的参数
 var generation = 0; // 表示代数的参数
-var e0,ew,eh,ewh;//4个顶点的特殊检查相邻数组
 
-function initEa(){
-	e0=[
-		cells-2,cells-1,cells-width,
-		width-1,        1,
-	  2*width-1,	width,	width-1
-	];
-	ew=[ // i==width-1
-		cells-2,cells-1,cells-width,
-		width-2,				0,
-		2*width-2	,2*width-1,width
-	];
-	eh=[ // i== (height-1)*width
-			(height-1)*width-1,(height-2)*width,(height-2)*width+1,
-			cells-1,		(height-1)*width+1,(height-2)*width,
-			width-1,	0,	1
-	];
-	ewh=[ //  i==cells-1 == height*width-1
-			cells-2-width, cells-1-width,cells-2*width,
-			cells-2,   (height-1)*width,
-			width-1, 0,   1
-	];
-}
 
 var ReactCell; // 细胞区域组件
 
@@ -279,9 +256,12 @@ $(document).ready(function() {
 
 function clearBoard() { //清除区域，全部为死亡细胞
 	board = [];
-	initEa();
-	for (var i = 0; i < (cells); i++) {
-		board[i] = {id: i, status: "cell dead"};
+	var i=0;
+	for(var y=0;y<height;y++){
+		for(var x=0;x<width;x++){
+			board[i]={id:i,status: "cell dead"};
+			i++;
+		}
 	}
 	generation = 0;
 	$("#gens").text("0");
@@ -329,21 +309,22 @@ function createBoard() { // 建立区域
 function runGeneration() { //运行一代的处理
 	var newBoard = [];// 用于新一代数据存储
 	var cellStatus = '';
-	for (var i = 0; i < (cells); i++) {
-		// 默认都是死亡细胞
-		newBoard.push({id: i, status: "cell dead"});
-
-		var check = cellCheck(i);
-
-		// 如果当前存活，且周围存活的是3或者2，则继续存活
-		if ((board[i].status == "cell alive" || board[i].status == "cell alive old") && (check == 3 || check == 2)) {
-			newBoard[i] = {id: i, status: "cell alive old"};
-		}
-		// 如果当前死亡,且周围存活是3，则变为存活
-		if (board[i].status == "cell dead" && check == 3) {
-			newBoard[i] = {id: i, status: "cell alive"};
-		}
-
+	var i=0;
+	for(var y=0;y<height;y++){
+		for(var x=0;x<width;x++){
+			// 默认都是死亡细胞
+			newBoard.push({id:i,status: "cell dead"});
+			var check=cellCheck(x,y);
+			// 如果当前存活，且周围存活的是3或者2，则继续存活
+			if ((board[i].status == "cell alive" || board[i].status == "cell alive old") && (check == 3 || check == 2)) {
+				newBoard[i].status="cell alive old";
+			}
+			// 如果当前死亡,且周围存活是3，则变为存活
+			if (board[i].status == "cell dead" && check == 3) {
+				newBoard[i].status= "cell alive";
+			}
+			i++;
+		};
 	};
 
 	//检测是否所有细胞已经死亡，如果都死亡则停止后续计算
@@ -393,56 +374,29 @@ function runIt() {
 	}
 };
 
+function cellCheck(x,y){
+	// 当前点位 y*width+x;
+	// 相邻矩阵为
+	var count=0;
+	var lm0=(y-1)<0?height-1:y-1;
+	var lm1=y;
+	var lm2=(y+1)==height?0:y+1;
 
-function cellCheck(i) { //检测周边存活情况
-	var count = 0;
-	var borderCell = 0;
-	var j;
-	var lm0,lm1,lm2;
-	var tm0,tm1,tm2;
-	var en=[];
-	// 4  e0,ew,eh,ewh,en;// 定义各种情况需要检测的数组
-	if(i==0){
-		borderCell=1;
-		en=e0;
-	}
-
-	if(borderCell!=1 && i==width-1){
-		borderCell=1;
-		en=ew;
-	}
-
-	if(borderCell!=1 && i==(cells-width)){
-		borderCell=1;
-		en=eh;
-	}
-
-	if(borderCell!=1 && i==(cells-1)){
-		borderCell=1;
-		en=ewh;
-	}
-
-	if(borderCell!=1){
-		lm1=Math.floor(i/width);
-		lm0=((lm1-1)<0)?lm1-1+height:lm1-1;
-		lm2=((lm1+1)>=height)?lm1-height+1:lm1+1;
-		tm1=i%width;
-		tm0=((tm1-1)<0)?tm1-1+width:tm1-1;
-		tm2=((tm1+1)>=width)?tm1+1-width:tm1+1;
-
-		en=[
-			lm0*width+tm0, lm0*width+tm1, lm0*width+tm2,
-			lm1*width+tm0,               lm1*width+tm2,
-			lm2*width+tm0, lm2*width+tm1, lm2*width+tm2
-			];
-	}
-	for(j=0;j<8;j++){
-		if( board[en[j]].status == "cell alive" || board[en[j]].status == "cell alive old"){
-			count++;
+	var tm0=(x-1)<0?width-1:x-1;
+	var tm1=x;
+	var tm2=(x+1)==width?0:x+1;
+	var en=[
+		lm0*width+tm0, lm0*width+tm1, lm0*width+tm2,
+		lm1*width+tm0,               lm1*width+tm2,
+		lm2*width+tm0, lm2*width+tm1, lm2*width+tm2
+		];
+		for(var j=0;j<8;j++){
+			if( board[en[j]].status == "cell alive" || board[en[j]].status == "cell alive old"){
+				count++;
+			}
 		}
-	}
-	return count;
-};
+		return count;
+}
 
 function initialSet() {
 	// 随机分布初始细胞存活状态
