@@ -1,0 +1,94 @@
+body {
+  background-color: #ddd;
+  background-repeat: repeat;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAACgCAMAAACsXRuGAAAADFBMVEWIiIjd3d3y8vLm5uZzdc63AAAAbklEQVR42u3ZIQ4AIAwDwI39/8/wAlTFxFUgm5ALmFZV51Iv52Vyx/7CzhdONr3/ylCgQIECBQoUKFCgQIECBQoUKFCgQIECBcrmccGe4qX4vqBAgQIFChQoUKBAgQIFChQoUKBAgQIFij3lX3gBXBBzc8FaGvIAAAAASUVORK5CYII=)
+}
+svg {
+  width:1000px;
+  height:500px;
+}
+.chart {
+  margin: 0px auto;
+  padding: 0px;
+  background-color: white;
+}
+
+.notes {
+  font-size: 12px;
+  font-family: sans-serif;
+  color: steelblue;
+  padding: 20px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5em;
+  font-family: sans-serif;
+  color: steelblue;
+  text-align: center;
+  padding: 15px 0px 5px 0px;
+}
+
+p {
+  margin: 0;
+}
+
+.chart .mouseover {
+  fill: lightsteelblue;
+}
+
+.chart rect,
+.chart .mouseoff {
+  fill: steelblue;
+}
+
+.chart text {
+  fill: black;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
+
+.axis text {
+  font: 15px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.card {
+  background-color: white;
+  margin: 40px auto;
+  padding: 0px;
+  width: 1050px;
+  height: 640px;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.32), 0 3px 12px 0 rgba(0, 0, 0, 0.24);
+}
+/* 显示提示的内容*/
+.tooltip {
+  position: absolute;
+  text-align: left;
+  width: auto;
+  height: auto;
+  padding: 3px 5px 3px 5px;
+  font: 1em sans-serif;
+  border: 0px;
+  border-radius: 5px;
+  pointer-events: none;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+  background-color: lightsteelblue;
+  z-index: 50;
+}
+
+.amount {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.year {
+  font-size: 0.8em;
+  font-weight: normal;
+}
