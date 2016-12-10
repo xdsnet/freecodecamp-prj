@@ -13,7 +13,9 @@
 //    "URL":"https://en.wikipedia.org/wiki/Marco_Pantani#Alleged_drug_use" // URL地址
 //  }
 
-var formatCount = d3.format(",.0f"); //定义数据无小数位
+//var formatCount = d3.format(",.0f"); //定义数据无小数位
+
+/*
 var formatTime = d3.timeFormat("%H:%M");// 定义时间格式为H:M
 
 function formatMinutes(d){
@@ -21,6 +23,14 @@ function formatMinutes(d){
     t.setSeconds(t.getSeconds() + d);
     return formatTime(t);
 };
+*/
+
+function formatMinutes(d){
+  var rt="";
+  var s=(d%60)<10?"0"+(d%60).toString():(d%60).toString();
+  rt=""+Math.floor(d/60)+":"+s;
+  return rt;
+}
 
 //d3 默认配置
 var margin = {
@@ -220,8 +230,8 @@ ascents.selectAll("circle")
   .attr("transform", "translate(15,+4)");
 
   function createToolTip(d) { // 显示具体信息的函数
-  var tooltipHTML = "<span class = 'name'>" + d.Name + "/ 国籍-" + d.Nationality + "</span>";
-  tooltipHTML += "<br/>成绩年: " + d.Year + ", 成绩用时: " + d.Time + "<br/>";
+  var tooltipHTML = "<span class='info'>运动员:</span><span class = 'name'>" + d.Name + "/ <span class='info'>国籍-</span>" + d.Nationality + "</span>";
+  tooltipHTML += "<br/><span class='info'>成绩年:</span> " + d.Year + ",<span class='info'> 成绩用时:</span> " + d.Time + "<br/>";
   if (d.Doping !== "") {
     tooltipHTML += "<br/><span class='nogood'> 受违纪指控情况:</span>" + d.Doping+"";
   } else {

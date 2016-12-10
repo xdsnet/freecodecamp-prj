@@ -9,6 +9,9 @@ body {
    background-repeat: no-repeat;
 }
 
+.info{
+  color: #990;
+}
 h1 {
   font-size: 3.2em;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
@@ -48,7 +51,7 @@ circle:hover {
   margin: 0 auto;
   position: absolute;
   pointer-events: pointer;
-  width: 200px;
+  width: 220px;
   line-height: 1.2;
   font-weight: bold;
   padding: 12px;
