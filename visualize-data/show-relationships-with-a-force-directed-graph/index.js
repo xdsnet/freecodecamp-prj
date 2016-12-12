@@ -42,7 +42,6 @@ var count = 0;
       });
       count++;
     }
-
   }
   // 生成链接数组，包括source/target和value 3个属性(注意value是后面生成，这里只有2个)
   for (var i = 0; i < data.length; i++) {
@@ -64,8 +63,8 @@ var count = 0;
 //力导向布局
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink())
-    .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width/2 , height/2 ));
+    .force("charge", d3.forceManyBody().strength([-15]) ) // 调整默认连接距离计算基数
+    .force("center", d3.forceCenter(width/2 , height/2 )); // 调整中心位置
 
 simulation
       .nodes(graph.nodes)
@@ -89,7 +88,8 @@ simulation
   });
   
   simulation.force("link")
-      .links(graph.links);
+      .links(graph.links)
+      .distance(40); //默认链接长度
       
 
 // 添加节点连线
@@ -166,8 +166,9 @@ node.append("image") //为节点添加图像、图标等
       }
     });
 
+// 出来拖动
 function dragstarted(d) {
-  if (!d3.event.active) simulation.alphaTarget(1).restart();
+  if (!d3.event.active) simulation.alphaTarget(0.1).restart();
   d.fx = d.x;
   d.fy = d.y;
 }

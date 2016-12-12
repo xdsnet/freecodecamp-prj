@@ -18,12 +18,6 @@ h2{
   stroke: black;
 }
 
-.nodes circle {
-  pointer-events: all;
-  stroke: none;
-  stroke-width: 40px;
-}
-
 .link {
   stroke: black;
   stroke-opacity: .2;
