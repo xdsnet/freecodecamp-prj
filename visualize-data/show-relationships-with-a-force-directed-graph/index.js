@@ -166,7 +166,7 @@ node.append("image") //为节点添加图像、图标等
       }
     });
 
-// 出来拖动
+// 处理拖动
 function dragstarted(d) {
   if (!d3.event.active) simulation.alphaTarget(0.1).restart();
   d.fx = d.x;
