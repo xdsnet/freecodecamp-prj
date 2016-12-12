@@ -1,0 +1,39 @@
+body{
+  background-color: grey;
+  text-align: center;
+}
+h2{
+  color: white;
+  background-color: black;
+  height: 50px;
+  width: 700px;
+  padding-top:15px;
+  margin-left: auto;
+  margin-right:auto;
+  margin-top:20px;
+  margin-bottom: 0px;
+  box-shadow: 10px 10px 5px #666666;
+}
+.node {
+  stroke: black;
+}
+
+.nodes circle {
+  pointer-events: all;
+  stroke: none;
+  stroke-width: 40px;
+}
+
+.link {
+  stroke: black;
+  stroke-opacity: .2;
+  stroke-width: 3px;
+}
+
+svg {
+  background-color: #ffeecc;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  box-shadow: 10px 10px 5px #666666;
+}
