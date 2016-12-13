@@ -1,0 +1,23 @@
+@import url(https://fonts.googleapis.com/css?family=Lato);
+
+html,body {
+  margin: 0;
+}
+
+.tooltip {   
+  font-family: 'Lato', 'Arial', sans-serif;
+  position: absolute;           
+  text-align: left;           
+  width: auto;                  
+  height: auto;                 
+  padding: 20px;             
+  font: 1em;
+  background: hsla(0, 0%, 100%, .8);
+  pointer-events: none;         
+  box-shadow: 0 5px 10px hsla(0, 0%, 0%, .2);
+  line-height: 1.5em;
+}
+
+.def {
+  font-weight: 700;
+}
