@@ -1,0 +1,100 @@
+/*@import url(https://fonts.googleapis.com/css?family=Roboto:400,700); */
+
+.WALL {
+  background-color: gray; // 定义墙体色
+}
+
+.FLOOR {
+  background-color: white; // 定义地板色
+}
+
+.player {
+  background-color: blue; // 定义玩家颜色
+  color: blue;
+}
+
+.enemy {
+  background-color: red; // 定义敌人颜色
+}
+
+.weapon {
+  background-color: orange; // 定义武器颜色
+}
+
+.health {
+  background-color: green; //　定义生命颜色
+}
+
+.exit {
+  background-color: purple; // 定义出口颜色
+}
+
+.tile {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  display: inline-block;
+  float: left;
+  letter-spacing: 7px;
+  width: .75em;
+}
+
+.dark {     // 迷雾颜色
+  color: black;
+  background-color: black;
+}
+
+.boardRow, .tile {
+  margin: 0px;
+  padding: 0px;
+  border-style: solid;
+  border-color: black;
+  border-width: 0px;
+  height: .75em;
+}
+
+body {
+  color: white;
+  font-family: Palatino, 'Palatino Linotype', Georgia;
+  background-color: black;
+}
+
+h1, h4 {
+  text-align: center;
+}
+
+h4 {
+  margin-top: -1em;
+}
+
+#ui {
+  padding-left: 10px;
+}
+
+#ui li {
+  list-style: none;
+  float: left;
+  padding: 5px 15px;
+  border-style: none;
+  border-width: 1px;
+  border-color: black;
+  font-family: Roboto
+}
+
+.label {
+  font-weight: 700;
+}
+
+button {
+  float: right;
+  margin-right: 8%;
+  padding: 5px;
+}
+
+#board {
+  padding-top: 10px;
+  clear: both;
+}
