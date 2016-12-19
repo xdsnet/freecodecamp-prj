@@ -149,7 +149,7 @@ const initialState = {
   darkness: true
 };
 
-// REDUX Reducer 处理器
+// REDUX Reducer 处理器 注意下面的...语法只展开顶层（明确的最下层）的对象，而不会递归展开，这样没有变化的对象可以很快复制，变化的对象属性由后面的定义覆盖
 function rogueLikeReducer(state = initialState, action) {
   switch (action.type) {
     case 'DAMAGE': // 输出伤害（注意，这里处理两个方向的伤害，对玩家的/对敌人的）
@@ -191,11 +191,11 @@ function rogueLikeReducer(state = initialState, action) {
         ...state,
         occupiedSpaces: _.chain(state.occupiedSpaces)
                           .omit(`${state.entities[action.entityName]
-                            .x}x${state.entities[action.entityName].y}`)
+                            .x}x${state.entities[action.entityName].y}`)    // 删除原来的位置
                           .set(`${state.entities[action.entityName].x +
                             action.vector.x}x${state.entities[action.entityName]
                               .y + action.vector.y}`,
-                            action.entityName)
+                            action.entityName)                              // 设置新的位置
                           .value(),
         entities: {
           ...state.entities,
@@ -211,9 +211,9 @@ function rogueLikeReducer(state = initialState, action) {
         ...state,
         occupiedSpaces: _.chain(state.occupiedSpaces)
                           .omit(`${state.entities[action.entityName]
-                            .x}x${state.entities[action.entityName].y}`)
+                            .x}x${state.entities[action.entityName].y}`)            // 删除原来的位置
                           .set(`${action.location.x}x${action.location.y}`,
-                            action.entityName)
+                            action.entityName)                                     // 设置新的位置
                           .value(),
         entities: {
           ...state.entities,
@@ -247,10 +247,10 @@ function rogueLikeReducer(state = initialState, action) {
         ...state,
         occupiedSpaces: _.chain(state.occupiedSpaces)
                           .omit(`${state.entities[action.entityName]
-                            .x}x${state.entities[action.entityName].y}`)
+                            .x}x${state.entities[action.entityName].y}`) // 移除对象位置
                           .value(),
         entities: _.chain(state.entities)
-                    .omit(action.entityName)
+                    .omit(action.entityName)                              // 移除对象
                     .value()
       };
     case 'RESET_BOARD': // 重置边界
@@ -353,9 +353,8 @@ let store = Redux.createStore(rogueLikeReducer);
 const RogueLike = React.createClass({
 
   propTypes: {
-    // This is the algorithm for creating the map. 对于创建地图，它是一个
-    // Must be a function that ouputs a matrix of 0 (wall) and 1 (floor) tiles
-		// 必须返回 一个 0（代表墙）、1（代表地板） 元素矩阵 ，定义react元素元素属性类型要求.
+    // mapAlgo用于创建地图，它是一个必须返回 一个 0（代表墙）、1（代表地板） 元素矩阵的函数
+    // getState是redux存储的函数。
     mapAlgo: React.PropTypes.func.isRequired,
     getState: React.PropTypes.func.isRequired
   },
@@ -378,8 +377,8 @@ const RogueLike = React.createClass({
   },
   componentWillUnmount: function() {
     this.unsubscribe();
-    window.removeEventListener('keydown', this._handleKeypress);
-    window.removeEventListener('resize', setWindowSize);
+    window.removeEventListener('keydown', this._handleKeypress); //注销键盘监控函数
+    window.removeEventListener('resize', setWindowSize);         // 注销窗口大小改变监控函数
   },
   _storeDataChanged: function() {
     const newState = this.props.getState()
@@ -422,7 +421,7 @@ const RogueLike = React.createClass({
     } while (!coords);
     return coords;
   },
-  _fillMap: function() {
+  _fillMap: function() { // 填充实体
     // 放置玩家
     setLocation('player', this._getEmptyCoords());
     // 放置其他对象（生命、武器等）
@@ -510,7 +509,7 @@ const RogueLike = React.createClass({
       // 瓦片区域(Tile)不是墙 ，检测是否包含一个实体
       const entityName = state.occupiedSpaces[newCoords.x + 'x' + newCoords.y];
       // 移动，然后返回（如果是空的，没有实体）
-      if (!entityName) {
+      if (!entityName) { 
         move('player', vector);
         return;
       }
@@ -571,18 +570,18 @@ const RogueLike = React.createClass({
           // 在像素上匹配css的高和宽
           tileSize = document.getElementsByClassName('tile').item(0) ? document.getElementsByClassName('tile').item(0).clientHeight : 10;
 
-    // 在当前视口上开始
-    const numCols = Math.floor((windowWidth / tileSize) - 5),
-          numRows = Math.floor((windowHeight/ tileSize) - 17);
-    let startX = Math.floor(player.x - (numCols/2));
-    let startY = Math.floor(player.y - (numRows/2));
-    // Make sure start isn't less than 0
+    // 在当前视口上开始 下面一段代码保证 玩家移动时 地图卷轴或者 直接移位 下面定义可视区域
+    const numCols = Math.floor((windowWidth / tileSize) - 5), // 水平最多放置地板瓦片数
+          numRows = Math.floor((windowHeight/ tileSize) - 17);// 垂直最多放置地板瓦片数
+    let startX = Math.floor(player.x - (numCols/2)); // 获取地图映射起始坐标x
+    let startY = Math.floor(player.y - (numRows/2)); // 获取地图映射起始坐标y
+    // 修正超出范围情况
     if (startX < 0) startX = 0;
     if (startY < 0) startY = 0;
-    // 设置结束标志
+    // 设置结束标志 计算 映射结束位置
     let endX = startX + numCols;
     let endY = startY + numRows;
-    // 最终确认起点和终点坐标
+    // 最终确认起点和终点坐标 再次修正超范围情况
     if (endX > map.length) {
       startX = numCols > map.length ? 0 : startX - (endX - map.length);
       endX = map.length;
@@ -592,19 +591,19 @@ const RogueLike = React.createClass({
       endY = map[0].length;
     }
 
-    // 创建一个可见的游戏地图
+    // 创建一个可见的游戏地图(生成实际可视页面对象)
     let rows = [], tileClass, row;
     for (let y = startY; y < endY; y++) {
       row = [];
       for (let x = startX; x < endX; x++) {
         let entity = occupiedSpaces[`${x}x${y}`];
-        if (!entity) {
+        if (!entity) { // 判断是否有实体对象，如果没有就获取该位置属性
           tileClass = reverseLookup[map[x][y]];
-        } else {
+        } else {      // 如果有，则获取实体属性
           tileClass = entities[entity].entityType;
         }
         if (darkness) {
-          // 确认是否是 阴影迷雾
+          // 确认是否是 阴影迷雾,如果打开阴影，则范围外用黑色填充
           const xDiff = player.x - x,
                 yDiff = player.y - y;
           if (Math.abs(xDiff) > SIGHT || Math.abs(yDiff) > SIGHT) {
@@ -613,12 +612,12 @@ const RogueLike = React.createClass({
             tileClass += ' dark';
           }
         }
-        row.push(React.createElement('span', {className: 'tile ' + tileClass, key: x + 'x' + y}, ' '));
+        row.push(React.createElement('span', {className: 'tile ' + tileClass, key: x + 'x' + y}, ' ')); // 实际放置瓦片对象
       }
       rows.push(React.createElement('div', {className: 'boardRow', key: 'row' + y}, row))
     }
 
-    return (  // react 对象标签定义
+    return (  // react 对象标签定义(返回实际标签)
       <div id = 'game'>
         <ul id = 'ui'>
           <li id = 'health'><span className = 'label'>生命:</span> {player.health}</li>
@@ -627,6 +626,7 @@ const RogueLike = React.createClass({
           <li id = 'playerLevel'><span className = 'label'>等级:</span> {player.level}</li>
           <li id = 'xp'><span className = 'label'>到下一级:</span> {player.toNextLevel} XP</li>
           <li id = 'level'><span className = 'label'>楼层:</span> {level}</li>
+          <li id = 'playerCoord'><span className = 'label'>玩家坐标:</span> {player.x}/{player.y}</li>
         </ul>
         <div className = 'buttons'>
           <ToggleButton
@@ -669,8 +669,8 @@ ReactDOM.render(
 
 // 地图生成器
 // 返回指定大小的矩阵，并指定房间数（有默认参数预定义）
-function createMap(width = 100, height = 100, maxRoomSize = 20, minRoomSize = 6, maxHallLength = 5, numRooms = 20, roomChance = .75) {
-  // 初始化墙 ( _. 类的函数都是lodash库提供的工具函数 )
+function createMap(width = 100, height = 100, maxRoomSize = 20, minRoomSize = 6, maxHallLength = 5, numRooms = 20) {
+  // 初始化墙 ( _. 类的函数都是lodash库提供的工具函数 ) function createMap(width = 100, height = 100, maxRoomSize = 20, minRoomSize = 6, maxHallLength = 5, numRooms = 20, roomChance = .75) {
   let map = _.fill(Array(width), 0);   // 构造地图数组，是width个元素的数组，且全由0填充
   const blankCol = _.fill(Array(height), tileType.WALL); // 构建一个标准的blankCol数组，其有height个元素，全由tileType.WALL (墙=0)填充
   map = map.map(() => blankCol.slice()); // map的每个元素变成一个blanckCol数组（拷贝复制），使得map变成 width * height
@@ -694,11 +694,11 @@ function createMap(width = 100, height = 100, maxRoomSize = 20, minRoomSize = 6,
     return map;
   }
 
-  // 尝试放置随机房间，直到成功
+  // 尝试放置随机房间，直到成功,放1个
   function placeRoom(map) {
     let wall, width, height, isRoom, startX, startY, coords, numClear;
     while (true) {
-      // 创建随机位置和房间
+      // 创建随机位置和房间 ，循环直到能放置为止
       // TODO - Choose wall or hall
       numClear = 0;
       wall = findWall(map);
@@ -725,19 +725,19 @@ function createMap(width = 100, height = 100, maxRoomSize = 20, minRoomSize = 6,
         default:
           break;
       }
-      // Exit if room would be outside matrix 如果房间尺寸超出范围则退出
+      //  如果房间尺寸超出范围则退出
       if (startX < 0 || startY < 0 || startX + width >= map.length || startY + height >= map[0].length) {
         continue;
       }
-      // check if all spaces are clear 确认是否所有的空间已经干净
+      // 确认是否所有的空间已经干净
       for (let i = startX; i < startX + width; i++) {
         if (map[i].slice(startY, startY + height).every(tile => tile === tileType.WALL)) {
           numClear++;
         }
       }
       if (numClear === width) {
-        fillRect(map, {x: startX, y: startY}, {x: width, y: height}, tileType.FLOOR);
-        map[coords.x][coords.y] = 1;
+        fillRect(map, {x: startX, y: startY}, {x: width, y: height}, tileType.FLOOR); // 放置房间
+        map[coords.x][coords.y] = tileType.FLOOR; // 设置通道
         return map;
       }
     }
@@ -747,37 +747,37 @@ function createMap(width = 100, height = 100, maxRoomSize = 20, minRoomSize = 6,
     }
   }
 
-  // Loops until it finds a wall tile 循环直到找到所有的墙
+  //循环直到找到所有的墙
   function findWall(map) {
     const coords = {x: 0, y: 0};
     let wallDir = false;
-    do {
+    do {  // 获取范围内的一个随机位置
       coords.x = Math.floor(Math.random() * map.length);
       coords.y = Math.floor(Math.random() * map[0].length);
-      wallDir = isWall(map, coords);
-    } while (!wallDir);
+      wallDir = isWall(map, coords); // 判断随机位置的开口方向
+    } while (!wallDir); // 如果不是墙就重新进行前面步骤
 
     return {coords: coords, openDir: wallDir};
   }
 
-  // Takes a map matrix and a coordinate object 放置地图和实体对象
-  // Returns false if not a wall, otherwise the direction of the open tile 如果不是墙就返回 false，否则该方向开放（即可以移动过去）
+  // 放置地图和实体对象
+  //  如果不是墙就返回 false，否则该方向开放（即可以移动过去）
   function isWall(map, coords) {
-    // return false if tile isn't wall
+    // 如果不是墙就返回false
     if (map[coords.x][coords.y] !== tileType.WALL) { return false; }
-    // left is open  左边是开放的
+    //  左边是开放的
     if (typeof map[coords.x - 1] !== 'undefined' && map[coords.x - 1][coords.y] === tileType.FLOOR) {
       return 'left';
     }
-    // right is open 右边开放
+    //  右边开放
     if (typeof map[coords.x + 1] !== 'undefined' && map[coords.x + 1][coords.y] === tileType.FLOOR) {
       return 'right';
     }
-    // top is open 上边开放
+    //  上边开放
     if (map[coords.x][coords.y - 1] === tileType.FLOOR) {
       return 'top';
     }
-    // bottom is open 下边开放
+    //  下边开放
     if (map[coords.x][coords.y + 1] === tileType.FLOOR) {
       return 'bottom';
     }
