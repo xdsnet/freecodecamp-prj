@@ -10,7 +10,7 @@ const tileType = { // 地图类型 墙体为0，地板为1
 };
 //  反向查询数据定义
 const reverseLookup = ['WALL', 'FLOOR'];
-const weaponTypes = [ // 武器参数
+const weaponTypes = [ // 武器参数 ，每层有一个武器，控制武器数可以控制游戏层数
   {
     entityName: '黄铜剑',
     entityType: 'weapon',
@@ -36,11 +36,18 @@ const weaponTypes = [ // 武器参数
     attack: 22
   },
   {
-    entityName: '神器-菜刀',
+    entityName: '圣器-打狗棒',
     entityType: 'weapon',
     health: 0,
     attack: 30
+  },
+  {
+    entityName: '神器-菜刀',
+    entityType: 'weapon',
+    health: 0,
+    attack: 40
   }
+  //*/
 ];
 // 普通的敌人参数，生命、攻击力和经验都是是层数+默认值
 const ENEMY = {
@@ -62,64 +69,64 @@ notifier.success = notifier.spawn({addnCls: 'humane-jackedup-success'});
 
 /** REDUX 代码 **/
 // REDUX结合行为创建 (Bound Action Creators)
-function damage(entity, value) { // 攻击伤害行为
-  store.dispatch({type: 'DAMAGE', entityName: entity, value: value});
+function damage(entity, value) { 
+  store.dispatch({type: '伤害', entityName: entity, value: value});
 }
-function heal(entity, health) { // 加生命行为
-  store.dispatch({type: 'HEAL', entityName: entity, value: health});
+function heal(entity, health) { 
+  store.dispatch({type: '加生命', entityName: entity, value: health});
 }
-function move(entity, vector) { //移动行为
-  store.dispatch({type: 'MOVE', entityName: entity, vector: vector});
+function move(entity, vector) { 
+  store.dispatch({type: '移动', entityName: entity, vector: vector});
 }
-function setLocation(entity, location) { // 放置实体行为
-  store.dispatch({type: 'SET_LOCATION', entityName: entity, location: location});
+function setLocation(entity, location) { 
+  store.dispatch({type: '设置位置', entityName: entity, location: location});
 }
-function switchWeapon(weaponName, attack) { // 拾到武器行为
-  store.dispatch({type: 'SWITCH_WEAPON', weapon: weaponName, attack: attack});
+function switchWeapon(weaponName, attack) { 
+  store.dispatch({type: '捡武器', weapon: weaponName, attack: attack});
 }
-function addEntity(entityName, entityType, health, attack, location) { // 增加实体行为
-  store.dispatch({type: 'ADD_ENTITY', entityName: entityName, entityType: entityType,
+function addEntity(entityName, entityType, health, attack, location) { 
+  store.dispatch({type: '加实体对象', entityName: entityName, entityType: entityType,
     health: health, attack: attack, location: location});
 }
-function removeEntity(entityName) { // 删除实体行为
-  store.dispatch({type: 'REMOVE_ENTITY', entityName: entityName});
+function removeEntity(entityName) { 
+  store.dispatch({type: '删实体对象', entityName: entityName});
 }
-function resetBoard() { // 重置边界
-  store.dispatch({type: 'RESET_BOARD'});
+function resetBoard() { 
+  store.dispatch({type: '重置板'});
 }
-function setMap(map) {  // 设置地图
-  store.dispatch({type: 'SET_MAP', map: map});
+function setMap(map) {  
+  store.dispatch({type: '设置地图', map: map});
 }
-function increaseLevel() { // 增加层
-  store.dispatch({type: 'INCREASE_LEVEL'});
+function increaseLevel() { 
+  store.dispatch({type: '上楼'});
 }
-function resetLevel() { // 重置层
-  store.dispatch({type: 'RESET_LEVEL'});
+function resetLevel() { 
+  store.dispatch({type: '重置楼层'});
 }
-function setWindowSize() { // 设置窗口尺寸
-  store.dispatch({type: 'SET_WINDOW_SIZE',
+function setWindowSize() { 
+  store.dispatch({type: '设置窗口大小',
     windowWidth: window.innerWidth,
     windowHeight: window.innerHeight
   });
 }
-function gainXp(xp) {  // 经验处理
-  store.dispatch({type: 'GAIN_XP', xp: xp});
+function gainXp(xp) {  
+  store.dispatch({type: '经验增加', xp: xp});
 }
 function levelUp(attack, health, xp) { // 经验升级 
-  store.dispatch({type: 'LEVEL_UP',
+  store.dispatch({type: '玩家升级',
     attack: attack,
     health: health,
     toNextLevel: xp
   });
 }
-function resetMap(map) { // 重置地图 
-  store.dispatch({type: 'RESET_MAP', map: map});
+function resetMap(map) { 
+  store.dispatch({type: '重设地图', map: map});
 }
-function addBoss(attack, health, coords) { // 增加boss
-  store.dispatch({type: 'ADD_BOSS', attack: attack, health: health, location: coords});
+function addBoss(attack, health, coords) { 
+  store.dispatch({type: '放置Boss', attack: attack, health: health, location: coords});
 }
-function toggleDarkness() { // 迷雾处理
-  store.dispatch({type: 'TOGGLE_DARKNESS'});
+function toggleDarkness() { 
+  store.dispatch({type: '开关迷雾'});
 }
 
 // REDUX 初始化状态
@@ -138,12 +145,13 @@ const initialState = {
       toNextLevel: 60
     }
   },
-  // 通过id链接到空间的站位符（表示玩家位置）
+  // 通过id链接到空间的站位符（表示玩家位置yi）
   occupiedSpaces: {
     '0x0': 'player'
   },
   map: [],
   level: 0,
+  topLevel: weaponTypes.length,
   windowHeight: 500,
   windowWidth: 500,
   darkness: true
@@ -152,7 +160,7 @@ const initialState = {
 // REDUX Reducer 处理器 注意下面的...语法只展开顶层（明确的最下层）的对象，而不会递归展开，这样没有变化的对象可以很快复制，变化的对象属性由后面的定义覆盖
 function rogueLikeReducer(state = initialState, action) {
   switch (action.type) {
-    case 'DAMAGE': // 输出伤害（注意，这里处理两个方向的伤害，对玩家的/对敌人的）
+    case '伤害': // 输出伤害（注意，这里处理两个方向的伤害，对玩家的/对敌人的）
       return {
         ...state,
         entities: {
@@ -163,7 +171,7 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'HEAL': // 生命力增加
+    case '加生命': 
       return {
         ...state,
         entities: {
@@ -174,7 +182,7 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'SWITCH_WEAPON': // 捡到武器
+    case '捡武器': 
       return {
         ...state,
         entities: {
@@ -186,7 +194,7 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'MOVE': // 移动
+    case '移动':
       return {
         ...state,
         occupiedSpaces: _.chain(state.occupiedSpaces)
@@ -206,7 +214,7 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'SET_LOCATION': //设置位置
+    case '设置位置': //设置位置
       return {
         ...state,
         occupiedSpaces: _.chain(state.occupiedSpaces)
@@ -224,7 +232,7 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'ADD_ENTITY': // 添加实体对象
+    case '加实体对象': // 添加实体对象
       return {
         ...state,
         occupiedSpaces: {
@@ -242,7 +250,7 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'REMOVE_ENTITY': // 移除实体对象
+    case '删实体对象': // 移除实体对象
       return {
         ...state,
         occupiedSpaces: _.chain(state.occupiedSpaces)
@@ -253,7 +261,7 @@ function rogueLikeReducer(state = initialState, action) {
                     .omit(action.entityName)                              // 移除对象
                     .value()
       };
-    case 'RESET_BOARD': // 重置边界
+    case '重置板': // 放置player
       return {
         ...state,
         entities: {
@@ -263,28 +271,28 @@ function rogueLikeReducer(state = initialState, action) {
           [`${state.entities.player.x}x${state.entities.player.y}`]: 'player'
         }
       };
-    case 'SET_MAP': // 设置地图
+    case '设置地图': 
       return {
         ...state,
         map: action.map
       };
-    case 'INCREASE_LEVEL': // 增加层次
+    case '上楼': 
       return {
         ...state,
         level: state.level + 1
       };
-    case 'RESET_LEVEL': // 重设层次
+    case '重置楼层': 
       return {
         ...state,
         level: 0
       };
-    case 'SET_WINDOW_SIZE': // 设置窗口尺寸
+    case '设置窗口大小': 
       return {
         ...state,
         windowHeight: action.windowHeight,
         windowWidth: action.windowWidth
       };
-    case 'GAIN_XP': // 升级经验需求
+    case '经验增加': 
       return {
         ...state,
         entities: {
@@ -295,7 +303,7 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'LEVEL_UP':  // 升级
+    case '玩家升级':  
       return {
         ...state,
         entities: {
@@ -309,12 +317,12 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'RESET_MAP': // 重设地图
+    case '重设地图': 
       return {
         ...initialState,
         map: action.map
       };
-    case 'ADD_BOSS': // 添加Boss
+    case '放置Boss': 
       return {
         ...state,
         occupiedSpaces: {
@@ -335,7 +343,7 @@ function rogueLikeReducer(state = initialState, action) {
           }
         }
       };
-    case 'TOGGLE_DARKNESS': // 控制迷雾
+    case '开关迷雾': // 控制迷雾
       return {
         ...state,
         darkness: !state.darkness
@@ -343,14 +351,30 @@ function rogueLikeReducer(state = initialState, action) {
     default:
       return state;
   }
-  return state;
 }
 
 // REDUX 存储
 let store = Redux.createStore(rogueLikeReducer);
 
 // REACT UI
-const RogueLike = React.createClass({
+const ToggleButton = React.createClass({ // 迷雾开关定义
+  propTypes: {
+    label: React.PropTypes.string.isRequired,
+    id: React.PropTypes.string.isRequired,
+    handleClick: React.PropTypes.func.isRequired
+  },
+  render: function() {
+    return (
+      <button
+        className="toggleButton"
+        id={this.props.id}
+        onClick={this.props.handleClick}>{this.props.label}
+      </button>
+    );
+  }
+});
+
+const Youxi = React.createClass({ // 游戏主类
 
   propTypes: {
     // mapAlgo用于创建地图，它是一个必须返回 一个 0（代表墙）、1（代表地板） 元素矩阵的函数
@@ -395,7 +419,8 @@ const RogueLike = React.createClass({
       level: state.level,
       windowHeight: state.windowHeight,
       windowWidth: state.windowWidth,
-      darkness: state.darkness
+      darkness: state.darkness,
+      topLevel:state.topLevel
     }
   },
   _playerLeveledUp: function() {
@@ -428,19 +453,26 @@ const RogueLike = React.createClass({
     const state = this.props.getState();
     const weapon = weaponTypes[state.level];
     addEntity(weapon.entityName, 'weapon', weapon.health, weapon.attack, this._getEmptyCoords());
-    // 放置生命和敌人
-    const NUM_THINGS = 5,
-          HEALTH_VAL = 20,
+    // 放置生命和敌人 随机放置，数量随机
+    let NUM_THINGS = 5; // 定义物品数量 小怪和血
+    const HEALTH_VAL = 20, // 生命基数
           LEVEL_MULT = state.level + 1;
+        NUM_THINGS = Math.floor(NUM_THINGS + Math.random()*LEVEL_MULT); // 随机控制放置小怪和血瓶的数量
     for (let i = 0; i < NUM_THINGS; i++) {
+      let randomT = (Math.random()>0.5)?-1:1; // 获得一个随机量，来调整怪物属性
       addEntity('health'+i, 'health', HEALTH_VAL, 0, this._getEmptyCoords());
-      addEntity('enemy'+i, 'enemy', LEVEL_MULT * ENEMY.health,
-        LEVEL_MULT * ENEMY.attack, this._getEmptyCoords());
+      addEntity('enemy'+i, 'enemy', (LEVEL_MULT+randomT) * ENEMY.health,
+        (LEVEL_MULT-randomT) * ENEMY.attack, this._getEmptyCoords()); // 调整添加的怪物属性，血多攻击就小一些
     }
     // 每层放置出口
-    if (state.level < 4) addEntity('exit', 'exit', 0, 0, this._getEmptyCoords());
+    if (state.level < state.topLevel-1) addEntity('exit', 'exit', 0, 0, this._getEmptyCoords());
     // 在最高层放置Boss
-    if (state.level === 4) addBoss(125, 500, this._getEmptyCoords());
+    if (state.level === ( state.topLevel - 1)){
+      let randomT = (Math.random()>0.5)?-1:1;
+      addBoss(125 + randomT*ENEMY.attack // 随机调整boss的攻击属性
+            , 500 + randomT*ENEMY.health // 随机调整boos的生命属性
+            , this._getEmptyCoords());
+    } 
   },
   _addVector: function(coords, vector) {
     return {x: coords.x + vector.x, y: coords.y + vector.y};
@@ -472,7 +504,7 @@ const RogueLike = React.createClass({
       this._handleMove(vector);
     }
   },
-  _handleSwipe: function(e) { // 攻击处理方向.对于触摸
+  _handleSwipe: function(e) { // 处理触摸滑动方向，产生玩家移动行为.对于触摸
     let vector;
     const {overallVelocity, angle} = e;
     if (Math.abs(overallVelocity) > .75) {
@@ -565,11 +597,10 @@ const RogueLike = React.createClass({
 
   render: function() {
     const {map, entities, occupiedSpaces, level, player, windowHeight,
-           windowWidth, winner, darkness} = this.state,
+           windowWidth, winner, darkness, topLevel} = this.state,
           SIGHT = 7, // 控制迷雾破空范围
           // 在像素上匹配css的高和宽
           tileSize = document.getElementsByClassName('tile').item(0) ? document.getElementsByClassName('tile').item(0).clientHeight : 10;
-
     // 在当前视口上开始 下面一段代码保证 玩家移动时 地图卷轴或者 直接移位 下面定义可视区域
     const numCols = Math.floor((windowWidth / tileSize) - 5), // 水平最多放置地板瓦片数
           numRows = Math.floor((windowHeight/ tileSize) - 17);// 垂直最多放置地板瓦片数
@@ -619,14 +650,16 @@ const RogueLike = React.createClass({
 
     return (  // react 对象标签定义(返回实际标签)
       <div id = 'game'>
+        <h1>React 迷宫杀怪</h1>
+        <h4>Boss在第 <span className="number1">{topLevel}</span> 层</h4>
         <ul id = 'ui'>
-          <li id = 'health'><span className = 'label'>生命:</span> {player.health}</li>
-          <li id = 'weapon'><span className = 'label'>武器:</span> {player.weapon}</li>
-          <li id = 'attack'><span className = 'label'>攻击力:</span> {player.attack}</li>
-          <li id = 'playerLevel'><span className = 'label'>等级:</span> {player.level}</li>
-          <li id = 'xp'><span className = 'label'>到下一级:</span> {player.toNextLevel} XP</li>
-          <li id = 'level'><span className = 'label'>楼层:</span> {level}</li>
-          <li id = 'playerCoord'><span className = 'label'>玩家坐标:</span> {player.x}/{player.y}</li>
+          <li id = 'health'><span className = 'label'>生命:</span> <span className="number">{player.health}</span></li>
+          <li id = 'weapon'><span className = 'label'>武器:</span><span className="number"> {player.weapon}</span></li>
+          <li id = 'attack'><span className = 'label'>攻击力:</span> <span className="number">{player.attack}</span></li>
+          <li id = 'playerLevel'><span className = 'label'>等级:</span><span className="number"> {player.level + 1}</span></li>
+          <li id = 'xp'><span className = 'label'>到下一级:</span><span className="number"> {player.toNextLevel} XP</span></li>
+          <li id = 'level'><span className = 'label'>楼层:</span> <span className="number">{level + 1}</span></li>
+          <li id = 'playerCoord'><span className = 'label'>玩家坐标:</span> <span className="number">{player.x}/{player.y}</span></li>
         </ul>
         <div className = 'buttons'>
           <ToggleButton
@@ -642,28 +675,13 @@ const RogueLike = React.createClass({
   }
 });
 
-const ToggleButton = React.createClass({ // 迷雾开关定义
-  propTypes: {
-    label: React.PropTypes.string.isRequired,
-    id: React.PropTypes.string.isRequired,
-    handleClick: React.PropTypes.func.isRequired
-  },
-  render: function() {
-    return (
-      <button
-        className="toggleButton"
-        id={this.props.id}
-        onClick={this.props.handleClick}>{this.props.label}
-      </button>
-    );
-  }
-});
+
 
 // 利用 React 渲染到页面
 const targetEl = document.getElementById('root');
 
 ReactDOM.render(
-    <RogueLike mapAlgo={createMap} getState={store.getState}/>,
+    <Youxi mapAlgo={createMap} getState={store.getState}/>,
   targetEl
 );
 
@@ -747,7 +765,7 @@ function createMap(width = 100, height = 100, maxRoomSize = 20, minRoomSize = 6,
     }
   }
 
-  //循环直到找到所有的墙
+  //循环直到找到合适的墙（旁边是外部或者其他房间）
   function findWall(map) {
     const coords = {x: 0, y: 0};
     let wallDir = false;
@@ -755,7 +773,7 @@ function createMap(width = 100, height = 100, maxRoomSize = 20, minRoomSize = 6,
       coords.x = Math.floor(Math.random() * map.length);
       coords.y = Math.floor(Math.random() * map[0].length);
       wallDir = isWall(map, coords); // 判断随机位置的开口方向
-    } while (!wallDir); // 如果不是墙就重新进行前面步骤
+    } while (!wallDir); // 如果不是开口墙就重新进行前面步骤
 
     return {coords: coords, openDir: wallDir};
   }

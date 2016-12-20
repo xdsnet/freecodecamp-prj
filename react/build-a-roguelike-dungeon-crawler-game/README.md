@@ -17,9 +17,13 @@
 
 ## 实现说明
 1. 想使用React的JSX语法，你需要使用[https://github.com/babel/babel-standalone](https://github.com/babel/babel-standalone)提供的Babel作为预处理器
-2.
-3. 因为要使用sass编写样式(scss模式)，所以引入npm做项目依赖管理并进行scss到css的处理
-
+2. 因为要使用sass编写样式(scss模式)，所以引入npm做项目依赖管理并进行scss到css的处理
+3. 大多数代码引用的原始代码，只增加了一些特性：
+    1. 通过武器列表增加游戏地图层数
+    2. 每层物品数量随机
+    3. 增加小怪和boss的属性随机性
+4. 对原有代码进行了全面注释
+5. 增加了玩家位置指示器
 
 ## 项目结构
 * index.html - 入口和所有内容的展示
