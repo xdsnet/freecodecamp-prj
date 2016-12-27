@@ -29,12 +29,11 @@
     - [建立迷宫杀怪游戏(build-a-roguelike-dungeon-crawler-game)](react/build-a-roguelike-dungeon-crawler-game)  
 
 ### 数据可视化
-- [建立Markdown预览器(visualize-data-with-a-bar-chart)](visualize-data/visualize-data-with-a-bar-chart)
 * D3项目
-    - [建立GDP图表 (visualize-data-with-a-scatterplot-graph-incomplete )](visualize-data/visualize-data-with-a-scatterplot-graph-incomplete)
-    - [建立气温历史图表(visualize-data-with-a-heat-map-incomplete)](visualize-data/visualize-data-with-a-heat-map-incomplete)
-    - [建立FreeCodeCamp发帖关系图(show-relationships-with-a-force-directed-graph-incomplete )](visualize-data/show-relationships-with-a-force-directed-graph-incomplete)
-    - [建立自行车赛兴奋剂问题图表(map-data-Across-the-globe-incomplete)](visualize-data/map-data-Across-the-globe-incomplete)
+    - [建立GDP图表 (visualize-data-with-a-bar-chart)](visualize-data/visualize-data-with-a-bar-chart)
+    - [建立气温历史图表(visualize-data-with-a-heat-map)](visualize-data/visualize-data-with-a-heat-map)
+    - [建立FreeCodeCamp发帖关系图(show-relationships-with-a-force-directed-graph)](visualize-data/show-relationships-with-a-force-directed-graph)
+    - [建立自行车赛兴奋剂问题图表(map-data-Across-the-globe)](visualize-data/map-data-Across-the-globe)
     - [建立陨石分布图表(map-data-across-the-globe)](visualize-data/map-data-across-the-globe)
 
 ### 后端开发
