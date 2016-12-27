@@ -1,5 +1,5 @@
 [返回项目主页](https://github.com/xdsnet/freecodecamp-prj/)  [返回上级](../)
-#  散点图数据展示(visualize-data-with-a-scatterplot-graph-incomplete)
+#  散点图数据展示(visualize-data-with-a-scatterplot-graph)
 
 ## 任务要求
 * 一个Web页面
