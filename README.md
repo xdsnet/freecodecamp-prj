@@ -33,7 +33,7 @@
     - [建立GDP图表 (visualize-data-with-a-bar-chart)](visualize-data/visualize-data-with-a-bar-chart)
     - [建立气温历史图表(visualize-data-with-a-heat-map)](visualize-data/visualize-data-with-a-heat-map)
     - [建立FreeCodeCamp发帖关系图(show-relationships-with-a-force-directed-graph)](visualize-data/show-relationships-with-a-force-directed-graph)
-    - [建立自行车赛兴奋剂问题图表(map-data-Across-the-globe)](visualize-data/visualize-data-with-a-scatterplot-graph)
+    - [建立自行车赛兴奋剂问题图表(visualize-data-with-a-scatterplot-graph)](visualize-data/visualize-data-with-a-scatterplot-graph)
     - [建立陨石分布图表(map-data-across-the-globe)](visualize-data/map-data-across-the-globe)
 
 ### 后端开发
