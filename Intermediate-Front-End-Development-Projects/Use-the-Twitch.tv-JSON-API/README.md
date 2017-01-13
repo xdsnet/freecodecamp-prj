@@ -4,7 +4,7 @@
 ## 任务要求
 * 一个Web页面
 * 可以随意定义风格
-* 显示用户某些用户是否在斗鱼进行直播（原要求Twitch.tv直播，但因为各种原因，所以改成国内流行的飞鱼直播）
+* 显示用户某些用户是否在斗鱼进行直播（原要求Twitch.tv直播，但因为各种原因，所以改成国内流行的斗鱼直播）
 * 可以跳到在直播的页面
 
 
@@ -17,4 +17,4 @@
 * index.html - 入口和所有内容的展示
 
 ## Codepen.io 展示
-[Xdsnet的随机引用机](https://codepen.io/xdsnet/full/JbGYMp)
+[Xdsnet的斗鱼订阅](https://codepen.io/xdsnet/full/JbGYMp)
