@@ -38,12 +38,14 @@
 
 ### 后端开发
 * API项目
-    - [freecodecamp timestamp任务](http://github.com/xdsnet/timestamp)
-    - [who am i任务(Request Header Parser Microservice)](http://github.com/xdsnet/whoami)
-    - [short URL任务](http://github.com/xdsnet/xdsurl)
-    - [Image Search Abstraction Layer 任务](http://github.com/xdsnet/image-search)
-    - [file metadata](http://github.com/xdsnet/file-metadata)
+    - [freecodecamp timestamp任务](https://github.com/xdsnet/timestamp)
+    - [who am i任务(Request Header Parser Microservice)](https://github.com/xdsnet/whoami)
+    - [short URL任务](https://github.com/xdsnet/xdsurl)
+    - [Image Search Abstraction Layer 任务](https://github.com/xdsnet/image-search)
+    - [file metadata](https://github.com/xdsnet/file-metadata)
     
 ### 全栈开发
 * app项目
     - [投票App voting-app](http://github.com/xdsnet/voting-app)
+    - [夜生活app nightlife](https://github.com/xdsnet/fcc-nightlife)
+    - [股市追踪app  watchstocks](https://github.com/xdsnet/fcc-watchstocks)
